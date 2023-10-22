@@ -61,6 +61,9 @@ local function type_constructor(arg, args_count)
   elseif arg_type == 'boolean' then
     -- If a boolean value is passed
     return tocolor(tostring(arg), arg_type) .. ': [boolean]'
+  elseif arg_type == 'cdata' then
+    -- If a cdata is passed
+    return tocolor(tostring(arg), arg_type) .. ': [cdata]'
   else
     -- If nil, cdata, or an unknown type is passed
     return tocolor(tostring(arg), arg_type) .. ': [type undefended]'

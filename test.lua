@@ -51,9 +51,13 @@ obj.recursive = obj
 
 p(obj)
 
-
-local function mv(a, b, c, d)
-  return a, b, c, d, true, 'foobar'
+local function mv(a, b, c)
+  return a, b, c, true, 'foobar'
 end
 
-p(mv(1, 2, 3, 4))
+p(mv(1, 2, 3))
+
+-- For tarantool
+if box then
+  p(box.NULL)
+end

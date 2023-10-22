@@ -17,6 +17,7 @@ local scheme = {
   ["userdata"] = "\27[38;5;28m",
   ["thread"] = "\27[0;35m",
   ["function"] = "\27[0;35m",
+  ["cdata"] = "\27[0;35m",
   ["custom_func"] = "\27[0;34m",
   ["nil"] = "\27[0;35m"
 }
