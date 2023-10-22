@@ -9,6 +9,7 @@ local tocolor = color.tocolor
 local pimp = {
   prefix = nil,
   module_name = 'p',
+  output = true,
 }
 
 --- Find the arguments passed to the function
@@ -32,6 +33,10 @@ end
 -- @param ... any Arguments to be printed
 -- @return ... The passed arguments
 function pimp:debug(...)
+  if not self.output then
+    return ...
+  end
+
   local args = {...}
   local args_count = #args
 
@@ -108,6 +113,16 @@ end
 -- @param pref_str Pimp prefix
 function pimp:setPrefix(pref_str)
   self.prefix = tostring(pref_str)
+end
+
+--- Enable debug output
+function pimp:disable()
+  self.output = false
+end
+
+--- Disable debug output
+function pimp:enable()
+  self.output = true
 end
 
 --- Enable or disable colors

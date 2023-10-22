@@ -1,11 +1,17 @@
 local p = require 'pimp.init'
+-- p:disable() -- Disable debug output
 
 local function sum(a, b)
   local result = a + b
   return result
 end
 
+local function mv(a, b, c)
+  return a, b, c, true, 'foobar'
+end
+
 p(sum(7, 5))
+p(mv(1, 2, 3))
 p('Hello, World!')
 p(10000)
 p()
@@ -54,17 +60,3 @@ local obj = {
 obj.recursive = obj
 
 p(obj)
-
-local function mv(a, b, c)
-  return a, b, c, true, 'foobar'
-end
-
-p(mv(1, 2, 3))
-
-local t = {
-  name = "John",
-  age = 30,
-  city = "New York"
-}
-
-p(t)
