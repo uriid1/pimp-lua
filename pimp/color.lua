@@ -22,8 +22,7 @@ local scheme = {
   ["nil"] = "\27[0;35m"
 }
 
----
--- Format a value with color according to its type.
+--- Format a value with color according to its type.
 -- @param val any The value to be formatted.
 -- @param type? string The type of the value (optional, default is 'string').
 -- @return string The formatted value with color codes.
@@ -45,11 +44,10 @@ local function tocolor(val, type)
   return scheme[type] .. tostring(val) .. scheme.reset
 end
 
----
--- Module for Text Color Formatting.
+--- Module for Text Color Formatting.
 -- @table color
--- @field scheme table The color scheme used for formatting.
--- @field tocolor function Function to format text with color.
+-- @field scheme Table The color scheme used for formatting.
+-- @field tocolor Function to format text with color.
 
 return {
   scheme = scheme,

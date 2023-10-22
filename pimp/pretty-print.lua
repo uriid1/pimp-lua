@@ -8,11 +8,10 @@ local M = {
   debug = false,
 }
 
----
--- Wrap an object for pretty printing.
+--- Wrap an object for pretty printing.
 -- @param obj any The object to be pretty-printed.
--- @param indent? number The indentation level (optional, default is 0).
--- @param seen? table A table to keep track of visited objects (optional).
+-- @param indent number The indentation level (optional, default is 0).
+-- @param seen table A table to keep track of visited objects (optional).
 -- @return string The pretty-printed string.
 function M:wrap(obj, indent, seen)
   indent = indent or 0
@@ -24,7 +23,7 @@ function M:wrap(obj, indent, seen)
     -- Check if we've already seen this table
     if seen[obj] then
       local table_adrr = tostring(obj):match('table: (.+)')
-      return tocolor('<cycle: ' .. tocolor(table_adrr, 'address') .. tocolor('>', 'cycle'), 'cycle')
+      return tocolor('<cycle: ' .. table_adrr.. tocolor('>', 'cycle'), 'cycle')
     end
     seen[obj] = true
 

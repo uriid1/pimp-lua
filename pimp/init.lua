@@ -10,8 +10,7 @@ local pimp = {
   module_name = 'p',
 }
 
----
--- Find the arguments passed to the function
+--- Find the arguments passed to the function
 -- @local
 -- @param filepath string The path to the file
 -- @param call_line number The line number of the function call
