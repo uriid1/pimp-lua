@@ -1,8 +1,8 @@
 ---
 -- Pimp Module
 -- @module p
-local pp = require 'modules.pretty-print'
-local color = require 'modules.color'
+local pp = require 'pimp.pretty-print'
+local color = require 'pimp.color'
 local tocolor = color.tocolor
 
 local pimp = {
@@ -107,14 +107,22 @@ function pimp:debug(...)
   -- Find the function call
   local callname = find_call(filepath, linepos)
 
-  if #args == 1 then
-    -- If a function call was the first argument
-    if callname:match('.+%(.+%)') ~= nil then
-      local fmt_str = '%s%s: %s: %s\n'
-      io.write(fmt_str:format(self.prefix, callpos, tocolor(callname, 'custom_func'), ...))
-      return ...
+  -- If a function call was the first argument
+  if callname:match('.+%(.+%)') ~= nil then
+    local args2str = {}
+    for i = 1, #args do
+      local arg = args[i]
+      table.insert(args2str, type_constructor(arg, #args))
     end
 
+    local fmt_str = '%s%s: %s: %s\n'
+    io.write(
+      fmt_str:format(
+        self.prefix, callpos, tocolor(callname, 'custom_func'), table.concat(args2str, ', ')
+      )
+    )
+    return ...
+  else
     -- Determine the type of the first argument
     local res = type_constructor(args[1])
     local fmt_str = '%s%s: %s\n'

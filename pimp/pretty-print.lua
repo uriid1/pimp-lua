@@ -1,7 +1,7 @@
 ---
 -- Table Printing Module
 -- @module pretty-print
-local color = require 'modules.color'
+local color = require 'pimp.color'
 local tocolor = color.tocolor
 
 local M = {
