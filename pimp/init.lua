@@ -2,6 +2,7 @@
 -- Pimp Module
 -- @module p
 local pp = require 'pimp.pretty-print'
+local type_constructor = require 'pimp.type_constructor'
 local color = require 'pimp.color'
 local tocolor = color.tocolor
 
@@ -27,54 +28,12 @@ local function find_call(filepath, call_line)
 end
 
 ---
--- Determine the type of an argument and format it
--- @local
--- @param arg any The argument
--- @param args_count number The number of arguments
--- @return string The formatted argument
-local function type_constructor(arg, args_count)
-  local arg_type = type(arg)
-
-  if arg_type == 'table' then
-    -- If a table is passed
-    if args_count then
-      if args_count > 1 then
-        return tocolor(tostring(arg), 'table_addr')
-      end
-    end
-
-    -- Pretty-print the table
-    return pp:wrap(arg)
-  elseif arg_type == 'number' then
-    -- If a number is passed
-    return tocolor(tostring(arg), arg_type) .. ': [number]'
-  elseif arg_type == 'function' then
-    -- If a function address is passed
-    return tocolor(tostring(arg), arg_type)
-  elseif arg_type == 'string' then
-    -- If a string is passed
-    return tocolor(arg) .. ': [length ' .. tostring(#arg) .. ']'
-  elseif arg_type == 'thread' then
-    -- If a thread is passed
-    return tocolor(tostring(arg), arg_type)
-  elseif arg_type == 'boolean' then
-    -- If a boolean value is passed
-    return tocolor(tostring(arg), arg_type) .. ': [boolean]'
-  elseif arg_type == 'cdata' then
-    -- If a cdata is passed
-    return tocolor(tostring(arg), arg_type) .. ': [cdata]'
-  else
-    -- If nil, cdata, or an unknown type is passed
-    return tocolor(tostring(arg), arg_type) .. ': [type undefended]'
-  end
-end
-
----
 -- Output debugging information
 -- @param ... any Arguments to be printed
 -- @return ... The passed arguments
 function pimp:debug(...)
   local args = {...}
+  local args_count = #args
 
   -- Set the prefix based on the loaded module's name
   if not self.prefix then
@@ -94,14 +53,13 @@ function pimp:debug(...)
   local callpos = filename .. ':' .. linepos
 
   -- No arguments were passed
-  if #args == 0 then
+  if args_count == 0 then
     io.write(self.prefix .. callpos, '\n')
     return ...
   end
 
   -- Handling the 'C' type (for C functions)
-  local type = info.what
-  if type == 'C' then
+  if info.what == 'C' then
     io.write(self.prefix .. table.concat(args, ', '), '\n')
     return ...
   end
@@ -112,9 +70,9 @@ function pimp:debug(...)
   -- If a function call was the first argument
   if callname:match('.+%(.+%)') ~= nil then
     local args2str = {}
-    for i = 1, #args do
+    for i = 1, args_count do
       local arg = args[i]
-      table.insert(args2str, type_constructor(arg, #args))
+      table.insert(args2str, type_constructor(arg, args_count))
     end
 
     local fmt_str = '%s%s: %s: %s\n'
@@ -128,15 +86,28 @@ function pimp:debug(...)
 
   -- Handling a variable number of arguments
   local data = {}
-  for i = 1, #args do
+  for i = 1, args_count do
     local arg = args[i]
-    local res = type_constructor(arg, #args)
-    table.insert(data, res)
+    local arg_type = type(arg)
+    -- Handle table type
+    if arg_type == 'table' and args_count == 1 then
+      table.insert(data, pp:wrap(arg))
+    else
+      --
+      local res = type_constructor(arg)
+      table.insert(data, res)
+    end
   end
 
   local fmt_str = '%s%s: %s\n'
   io.write(fmt_str:format(self.prefix, callpos, table.concat(data, ', ')))
   return ...
+end
+
+--- Set prefix
+-- @param pref_str Pimp prefix
+function pimp:setPrefix(pref_str)
+  self.prefix = tostring(pref_str)
 end
 
 ---

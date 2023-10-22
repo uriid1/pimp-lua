@@ -19,7 +19,7 @@ local scheme = {
   ["function"] = "\27[0;35m",
   ["cdata"] = "\27[0;35m",
   ["custom_func"] = "\27[0;34m",
-  ["nil"] = "\27[0;35m"
+  ["nil"] = "\27[0;35m",
 }
 
 --- Format a value with color according to its type.
@@ -41,7 +41,11 @@ local function tocolor(val, type)
     val = '\'' .. val .. '\''
   end
 
-  return scheme[type] .. tostring(val) .. scheme.reset
+  if scheme[type] then
+    return scheme[type] .. tostring(val) .. scheme.reset
+  end
+
+  return scheme['nil'] .. tostring(val) .. scheme.reset
 end
 
 --- Module for Text Color Formatting.

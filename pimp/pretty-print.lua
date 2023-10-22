@@ -1,6 +1,7 @@
 ---
 -- Table Printing Module
 -- @module pretty-print
+local type_constructor = require 'pimp.type_constructor'
 local color = require 'pimp.color'
 local tocolor = color.tocolor
 
@@ -86,7 +87,7 @@ function M:wrap(obj, indent, seen)
     str = str .. string.rep(' ', indent) .. tocolor('}', 'table')
     return str
   else
-    return tocolor(obj, type(obj))
+    return type_constructor(obj)
   end
 end
 
