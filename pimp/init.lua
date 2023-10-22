@@ -122,12 +122,6 @@ function pimp:debug(...)
       )
     )
     return ...
-  else
-    -- Determine the type of the first argument
-    local res = type_constructor(args[1])
-    local fmt_str = '%s%s: %s\n'
-    io.write(fmt_str:format(self.prefix, callpos, res))
-    return ...
   end
 
   -- Handling a variable number of arguments
