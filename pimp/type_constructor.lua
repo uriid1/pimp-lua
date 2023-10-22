@@ -32,6 +32,9 @@ local function type_constructor(arg)
   elseif arg_type == 'cdata' then
     -- If a cdata is passed
     return tocolor(tostring(arg), arg_type) .. ': [cdata]'
+  elseif arg_type == 'userdata' then
+    -- If a userdata is passed
+    return tocolor(tostring(arg), arg_type) .. ': [userdata]'
   else
     -- If nil, cdata, or an unknown type is passed
     return tocolor(tostring(arg), arg_type) .. ': [undefended]'
