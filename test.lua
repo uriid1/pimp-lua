@@ -22,6 +22,11 @@ if box then p(box.NULL) end
 p:setPrefix('Test| ')
 p(7, 'hello', {})
 p('foo', co, sum(4, 12))
+
+p:setPrefix('Disable colors| ')
+p.setUseColors(false)
+p('String without colors')
+p.setUseColors(true)
 p:setPrefix('p| ')
 
 -- PP array
@@ -55,3 +60,11 @@ local function mv(a, b, c)
 end
 
 p(mv(1, 2, 3))
+
+local t = {
+  name = "John",
+  age = 30,
+  city = "New York"
+}
+
+p(t)

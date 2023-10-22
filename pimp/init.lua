@@ -110,6 +110,10 @@ function pimp:setPrefix(pref_str)
   self.prefix = tostring(pref_str)
 end
 
+--- Enable or disable colors
+-- @param val boolean
+pimp.setUseColors = color.setUseColors
+
 ---
 -- Set up the 'debug' function to be called
 -- when attempting to invoke the table as a function

@@ -1,6 +1,8 @@
 ---
 -- Color Scheme for Text Formatting
 --
+local colors = true
+
 local scheme = {
   ["reset"] = "\27[0m",
 
@@ -24,36 +26,60 @@ local scheme = {
 
 --- Format a value with color according to its type.
 -- @param val any The value to be formatted.
--- @param type? string The type of the value (optional, default is 'string').
+-- @param type string The type of the value (optional, default is 'string').
 -- @return string The formatted value with color codes.
 local function tocolor(val, type)
   type = type or 'string'
 
+  if colors then
+    if type == 'function' then
+      return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
+    elseif type == 'custom_func' then
+      return scheme[type] .. tostring(val) .. scheme.reset
+    elseif type == 'thread' then
+      return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
+    elseif type == 'table_addr' then
+      return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
+    elseif type == 'string' then
+      val = '\'' .. val .. '\''
+    end
+
+    if scheme[type] then
+      return scheme[type] .. tostring(val) .. scheme.reset
+    end
+
+    return scheme['nil'] .. tostring(val) .. scheme.reset
+  end
+
   if type == 'function' then
-    return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
+    return '<' .. tostring(val) .. '>'
   elseif type == 'custom_func' then
-    return scheme[type] .. tostring(val) .. scheme.reset
+    return tostring(val)
   elseif type == 'thread' then
-    return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
+    return '<' .. tostring(val) .. '>'
   elseif type == 'table_addr' then
-    return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
+    return '<' .. tostring(val) .. '>'
   elseif type == 'string' then
     val = '\'' .. val .. '\''
   end
 
-  if scheme[type] then
-    return scheme[type] .. tostring(val) .. scheme.reset
-  end
+  return tostring(val)
+end
 
-  return scheme['nil'] .. tostring(val) .. scheme.reset
+--- Enable or disable colors
+-- @param val boolean
+local function setUseColors(val)
+  colors = val and true or false
 end
 
 --- Module for Text Color Formatting.
 -- @table color
 -- @field scheme Table The color scheme used for formatting.
 -- @field tocolor Function to format text with color.
+-- @field setUseColors Function to set use or unuse color sheme.
 
 return {
   scheme = scheme,
   tocolor = tocolor,
+  setUseColors = setUseColors,
 }
