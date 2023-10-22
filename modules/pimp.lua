@@ -1,73 +1,87 @@
--- Модуль пимпа
---
+---
+-- Pimp Module
+-- @module p
 local pp = require 'modules.pretty-print'
 local color = require 'modules.color'
 local tocolor = color.tocolor
 
-local ice_cream = {
+local pimp = {
   prefix = nil,
   module_name = 'p',
-  colorize = true,
 }
 
--- Поиск переданных в функцию аргументов
+---
+-- Find the arguments passed to the function
+-- @local
+-- @param filepath string The path to the file
+-- @param call_line number The line number of the function call
+-- @return string The found arguments
 local function find_call(filepath, call_line)
   local i = 0
   for line in io.lines(filepath) do
     i = i + 1
     if i == call_line then
-      local fdata = line:match(ice_cream.module_name..'%((.+)%)')
+      local fdata = line:match(pimp.module_name .. '%((.+)%)')
       return fdata
     end
   end
 end
 
+---
+-- Determine the type of an argument and format it
+-- @local
+-- @param arg any The argument
+-- @param args_count number The number of arguments
+-- @return string The formatted argument
 local function type_constructor(arg, args_count)
   local arg_type = type(arg)
 
   if arg_type == 'table' then
-    -- Передана таблица
+    -- If a table is passed
     if args_count then
       if args_count > 1 then
         return tocolor(tostring(arg), 'table_addr')
       end
     end
 
-    -- Претти принт таблицы
+    -- Pretty-print the table
     return pp:wrap(arg)
   elseif arg_type == 'number' then
-    -- Передано число
-    return tocolor(tostring(arg), arg_type)..': [number]'
+    -- If a number is passed
+    return tocolor(tostring(arg), arg_type) .. ': [number]'
   elseif arg_type == 'function' then
-    -- Передан адрес функции
+    -- If a function address is passed
     return tocolor(tostring(arg), arg_type)
   elseif arg_type == 'string' then
-    -- Передана строка
-    return tocolor(arg)..': [length '..tostring(#arg)..']'
+    -- If a string is passed
+    return tocolor(arg) .. ': [length ' .. tostring(#arg) .. ']'
   elseif arg_type == 'thread' then
-    -- Передана сопрограмма
+    -- If a thread is passed
     return tocolor(tostring(arg), arg_type)
   elseif arg_type == 'boolean' then
-    -- Передано булевое значение
-    return tocolor(tostring(arg), arg_type)..': [boolean]'
+    -- If a boolean value is passed
+    return tocolor(tostring(arg), arg_type) .. ': [boolean]'
   else
-    -- Передано nil, cdata или неизвестный тип
-    return tocolor(tostring(arg), arg_type)..': [type undefended]'
+    -- If nil, cdata, or an unknown type is passed
+    return tocolor(tostring(arg), arg_type) .. ': [type undefended]'
   end
 end
 
-function ice_cream:debug(...)
+---
+-- Output debugging information
+-- @param ... any Arguments to be printed
+-- @return ... The passed arguments
+function pimp:debug(...)
   local args = {...}
 
-  -- Установка префикса исходя из имени -
-  -- загруженного модуля
+  -- Set the prefix based on the loaded module's name
   if not self.prefix then
     local info = debug.getinfo(1, 'n')
-    self.prefix = info.name..'| '
+    self.prefix = info.name .. '| '
     self.module_name = info.name
   end
 
-  -- Получить информацию о месте вызова
+  -- Get information about the calling location
   -- S - source, short_src, what, linedefined, lastlinedefined
   -- L - currentline
   local info = debug.getinfo(2, 'Sl')
@@ -75,40 +89,40 @@ function ice_cream:debug(...)
   local linepos = info.currentline
   local filename = info.short_src
   local filepath = info.source:match('@(.+)')
-  local callpos = filename..':'..linepos
+  local callpos = filename .. ':' .. linepos
 
-  -- Не передали аргументов
+  -- No arguments were passed
   if #args == 0 then
-    io.write(self.prefix..callpos, '\n')
+    io.write(self.prefix .. callpos, '\n')
     return ...
   end
 
-  -- Обработка типа cdata
+  -- Handling the 'C' type (for C functions)
   local type = info.what
   if type == 'C' then
-    io.write(self.prefix..table.concat(args, ', '), '\n')
+    io.write(self.prefix .. table.concat(args, ', '), '\n')
     return ...
   end
 
-  -- Поиск аргументов
+  -- Find the function call
   local callname = find_call(filepath, linepos)
 
   if #args == 1 then
-    -- Если первым аргументом был вызов функции
+    -- If a function call was the first argument
     if callname:match('.+%(.+%)') ~= nil then
       local fmt_str = '%s%s: %s: %s\n'
       io.write(fmt_str:format(self.prefix, callpos, tocolor(callname, 'custom_func'), ...))
       return ...
     end
 
-    -- Определение первого аргумента
+    -- Determine the type of the first argument
     local res = type_constructor(args[1])
     local fmt_str = '%s%s: %s\n'
     io.write(fmt_str:format(self.prefix, callpos, res))
     return ...
   end
 
-  -- Обработка переменного числа аргументов
+  -- Handling a variable number of arguments
   local data = {}
   for i = 1, #args do
     local arg = args[i]
@@ -121,8 +135,9 @@ function ice_cream:debug(...)
   return ...
 end
 
--- Установка вызова debug функции
--- при попытки вызвать таблицу как функцию
-setmetatable(ice_cream, { __call = ice_cream.debug })
+---
+-- Set up the 'debug' function to be called
+-- when attempting to invoke the table as a function
+setmetatable(pimp, { __call = pimp.debug })
 
-return ice_cream
+return pimp

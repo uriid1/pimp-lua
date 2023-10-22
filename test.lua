@@ -1,4 +1,4 @@
-local p = require 'modules.pimpa'
+local p = require 'modules.pimp'
 
 local function sum(a, b)
   local result = a + b
