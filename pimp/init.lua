@@ -18,14 +18,31 @@ local pimp = {
 -- @param call_line number The line number of the function call
 -- @return string The found arguments
 local function find_call(filepath, call_line)
+  local buff = ''
   local i = 0
+
   for line in io.lines(filepath) do
     i = i + 1
+    -- Start capture
     if i == call_line then
-      local fdata = line:match(pimp.module_name .. '%((.+)%)')
-      return fdata
+      buff = buff .. line
+      if buff:sub(-1, -1) ~= ')' then
+        call_line = call_line + 1
+      else
+        break
+      end
     end
   end
+
+  -- Capture function and format buffer
+  buff = buff
+   :match(pimp.module_name .. '%((.+)%)?')
+   :gsub('%s*', '')
+   :gsub('[\n\t]', '')
+   :gsub('{ ', '{')
+   :gsub(' }', '}')
+
+  return buff
 end
 
 ---
@@ -60,34 +77,20 @@ function pimp:debug(...)
   -- No arguments were passed
   if args_count == 0 then
     io.write(self.prefix .. callpos, '\n')
+    io.flush()
     return ...
   end
 
   -- Handling the 'C' type (for C functions)
   if info.what == 'C' then
     io.write(self.prefix .. table.concat(args, ', '), '\n')
+    io.flush()
     return ...
   end
 
   -- Find the function call
   local callname = find_call(filepath, linepos)
-
-  -- If a function call was the first argument
-  if callname:match('.+%(.+%)') ~= nil then
-    local args2str = {}
-    for i = 1, args_count do
-      local arg = args[i]
-      table.insert(args2str, type_constructor(arg, args_count))
-    end
-
-    local fmt_str = '%s%s: %s: %s\n'
-    io.write(
-      fmt_str:format(
-        self.prefix, callpos, tocolor(callname, 'custom_func'), table.concat(args2str, ', ')
-      )
-    )
-    return ...
-  end
+  local is_func = callname:match('.+%(.*%)') ~= nil
 
   -- Handling a variable number of arguments
   local data = {}
@@ -95,8 +98,8 @@ function pimp:debug(...)
     local arg = args[i]
     local arg_type = type(arg)
     -- Handle table type
-    if arg_type == 'table' and args_count == 1 then
-      table.insert(data, pp:wrap(arg))
+    if arg_type == 'table' then
+      table.insert(data, pp:wrap(arg)..': [table]')
     else
       --
       local res = type_constructor(arg)
@@ -104,8 +107,16 @@ function pimp:debug(...)
     end
   end
 
-  local fmt_str = '%s%s: %s\n'
-  io.write(fmt_str:format(self.prefix, callpos, table.concat(data, ', ')))
+  if is_func then
+    local fmt_str = '%s%s: %s: %s\n'
+    callname = tocolor(callname, 'custom_func')
+    io.write(fmt_str:format(self.prefix, callpos, callname, table.concat(data, ', ')))
+  else
+    local fmt_str = '%s%s: %s\n'
+    io.write(fmt_str:format(self.prefix, callpos, table.concat(data, ', ')))
+  end
+
+  io.flush()
   return ...
 end
 

@@ -10,6 +10,14 @@ local function mv(a, b, c)
   return a, b, c, true, 'foobar'
 end
 
+local function getTable()
+  return {
+    name = "John",
+    age = 30,
+    city = "New York"
+  }, {1, 2, 3}
+end
+
 p(sum(7, 5))
 p(mv(1, 2, 3))
 p('Hello, World!')
@@ -60,3 +68,18 @@ local obj = {
 obj.recursive = obj
 
 p(obj)
+
+--
+p(getTable())
+
+local function foo(t)
+  return t, true
+end
+
+p(
+  foo({
+    'apple',
+    'banana',
+    'orange'
+  })
+)
