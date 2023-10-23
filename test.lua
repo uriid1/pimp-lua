@@ -38,9 +38,9 @@ p(7, 'hello', {})
 p('foo', co, sum(4, 12))
 
 p:setPrefix('Disable colors| ')
-p.setUseColors(false)
+p:setUseColors(false)
 p('String without colors')
-p.setUseColors(true)
+p:setUseColors(true)
 p:setPrefix('p| ')
 
 -- PP array
@@ -70,7 +70,9 @@ obj.recursive = obj
 p(obj)
 
 --
+p:disable()
 p(getTable())
+p:enable()
 
 local function foo(t)
   return t, true

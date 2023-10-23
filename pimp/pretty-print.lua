@@ -93,9 +93,23 @@ end
 
 ---
 -- Print a pretty representation of an object.
--- @param obj any The object to be printed.
-function M.pp(obj)
-  print(M:wrap(obj))
+-- @param ... any objects to be printed.
+function M.pp(...)
+  local args_count = select('#', ...)
+  if args_count == 0 then
+    io.write(M:wrap(nil), '\n')
+    io.flush()
+    return
+  end
+
+  local data = {}
+  for i = 1, select('#', ...) do
+    local arg = select(i, ...)
+    table.insert(data, M:wrap(arg))
+  end
+
+  io.write(table.concat(data, ', '), '\n')
+  io.flush()
 end
 
 ---

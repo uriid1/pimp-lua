@@ -1,6 +1,5 @@
 ---
--- Pimp Module
--- @module p
+-- @module pimp
 local pp = require 'pimp.pretty-print'
 local type_constructor = require 'pimp.type_constructor'
 local color = require 'pimp.color'
@@ -11,6 +10,7 @@ local pimp = {
   module_name = 'p',
   output = true,
   full_path = true,
+  use_colors = true,
 }
 
 --- Find the arguments passed to the function
@@ -60,9 +60,13 @@ function pimp:debug(...)
 
   -- Set the prefix based on the loaded module's name
   if not self.prefix then
-    local info = debug.getinfo(1, 'n')
+    local info = debug.getinfo(1, 'Sn')
+    -- if info.what == 'Lua' then
+    --   return pp.pp(...)
+    -- else
     self.prefix = info.name .. '| '
     self.module_name = info.name
+    -- end
   end
 
   -- Get information about the calling location
@@ -153,7 +157,10 @@ end
 
 --- Enable or disable colors
 -- @param val boolean
-pimp.setUseColors = color.setUseColors
+function pimp:setUseColors(val)
+  self.use_colors = val
+  color.setUseColors(val)
+end
 
 ---
 -- Set up the 'debug' function to be called
