@@ -10,6 +10,7 @@ local pimp = {
   prefix = nil,
   module_name = 'p',
   output = true,
+  full_path = true,
 }
 
 --- Find the arguments passed to the function
@@ -71,6 +72,10 @@ function pimp:debug(...)
 
   local linepos = info.currentline
   local filename = info.short_src
+  if self.full_path == false then
+    filename = filename:match('.+/(.-)$')
+  end
+
   local filepath = info.source:match('@(.+)')
   local callpos = filename .. ':' .. linepos
 
@@ -99,7 +104,7 @@ function pimp:debug(...)
     local arg_type = type(arg)
     -- Handle table type
     if arg_type == 'table' then
-      table.insert(data, pp:wrap(arg)..': [table]')
+      table.insert(data, pp:wrap(arg))
     else
       --
       local res = type_constructor(arg)
@@ -134,6 +139,16 @@ end
 --- Disable debug output
 function pimp:enable()
   self.output = true
+end
+
+--- Disable full path output
+function pimp:disableFullPath()
+  self.full_path = false
+end
+
+--- Enable full path output
+function pimp:enableFullPath()
+  self.full_path = true
 end
 
 --- Enable or disable colors
