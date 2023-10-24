@@ -40,24 +40,22 @@ local function find_call(filepath, call_line, curfunc)
   local close_brackets_count = 0 -- )
 
   if not stack_find_call[filepath] then
-    stack_find_call[filepath] = {
-      [call_line_non_modify] = {
-        filepath = filepath,
-        call_line = call_line_non_modify,
-        curfunc = curfunc,
-        buff = buff,
-        is_func = nil,
-      }
+    stack_find_call[filepath] = {}
+    stack_find_call[filepath][call_line_non_modify] = {
+      filepath = filepath,
+      call_line = call_line_non_modify,
+      curfunc = curfunc,
+      buff = buff,
+      is_func = nil,
     }
   elseif not stack_find_call[filepath][call_line_non_modify] then
-    stack_find_call[filepath] = {
-      [call_line_non_modify] = {
-        filepath = filepath,
-        call_line = call_line_non_modify,
-        curfunc = curfunc,
-        buff = buff,
-        is_func = nil,
-      }
+    stack_find_call[filepath] = {}
+    stack_find_call[filepath][call_line_non_modify] = {
+      filepath = filepath,
+      call_line = call_line_non_modify,
+      curfunc = curfunc,
+      buff = buff,
+      is_func = nil,
     }
   elseif stack_find_call[filepath][call_line_non_modify] then
     local current = stack_find_call[filepath][call_line_non_modify]
@@ -128,8 +126,6 @@ function pimp:debug(...)
   end
 
   -- Get information about the calling location
-  -- S - source, short_src, what, linedefined, lastlinedefined
-  -- L - currentline
   local info = debug.getinfo(2)
 
   local infunc = ''

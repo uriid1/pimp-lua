@@ -66,7 +66,7 @@ local function type_constructor(arg)
     return tocolor(tostring(arg), arg_type)
   elseif arg_type == 'string' then
     -- If a string is passed
-    arg = string.gsub(arg, '[%c\\\0-\31]', stringEscape)
+    arg = string.gsub(arg, '[%c]', stringEscape)
     return tocolor(arg) .. ': [length ' .. tostring(#arg) .. ']'
   elseif arg_type == 'thread' then
     -- If a thread is passed
