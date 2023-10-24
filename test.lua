@@ -4,10 +4,10 @@ local p = require 'pimp.init'
 --
 -- Inspect Variables
 --
--- p(_G)
 p('Hello, World!')
 p(10000, math.pi)
 p(true, false)
+p(0/0, -1/0, 1/0)
 p(function() end)
 p(coroutine.create(function() end))
 p(io.stderr)
@@ -85,8 +85,10 @@ local t = {
     'apple', 'banana', 'orange'
   },
 
+  inf = 1/0,
+  nan = 0/0,
   boolean = true,
-  string = 'Hello, world!',
+  string = '\tHello,\r\nworld!\r\n',
   func = function() end,
   thread = coroutine.create(function() end),
   empty_table = {},
