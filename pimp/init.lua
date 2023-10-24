@@ -6,8 +6,7 @@ local color = require 'pimp.color'
 local tocolor = color.tocolor
 
 local pimp = {
-  prefix = nil,
-  module_name = 'p',
+  prefix = 'p',
   output = true,
   full_path = true,
   use_colors = true,
@@ -85,14 +84,14 @@ local function find_call(filepath, call_line, curfunc)
 
   -- Remove spaces
   buff = buff:gsub('  ', '')
+             -- :gsub('[%c]', '')
 
   if curfunc then
     return buff:match(curfunc..'%((.+)%)'), true
   end
 
   -- Capture function and format buffer
-  buff = buff:sub(#pimp.module_name+2, -2)
-  --  :gsub('[\n\t]', '')
+  buff = buff:sub(#pimp.prefix+2, -2)
 
   -- Add to stack
   local current = stack_find_call[filepath][call_line_non_modify]
@@ -113,17 +112,7 @@ function pimp:debug(...)
 
   local args = {...}
   local args_count = #args
-
-  -- Set the prefix based on the loaded module's name
-  if not self.prefix then
-    local info = debug.getinfo(1)
-    if not info.name then
-      info.name = self.module_name
-    end
-
-    self.prefix = info.name .. '| '
-    self.module_name = info.name
-  end
+  local prefix = self.prefix .. '| '
 
   -- Get information about the calling location
   local info = debug.getinfo(2)
@@ -134,8 +123,8 @@ function pimp:debug(...)
       info.name = info.name .. '(...)'
     elseif info.linedefined > 0 then
       local filepath = info.source:match('@(.+)')
-      local args, _ = find_call(filepath, info.linedefined, info.name)
-      info.name = info.name .. '('..args..')'
+      local func_args, _ = find_call(filepath, info.linedefined, info.name)
+      info.name = info.name .. '('..func_args..')'
     else
       info.name = info.name .. '(?)'
     end
@@ -154,14 +143,14 @@ function pimp:debug(...)
 
   -- No arguments were passed
   if args_count == 0 then
-    io.write(self.prefix .. callpos .. infunc, '\n')
+    io.write(prefix .. callpos .. infunc, '\n')
     io.flush()
     return ...
   end
 
   -- Handling the 'C' type (for C functions)
   if info.what == 'C' then
-    io.write(self.prefix .. table.concat(args, ', '), '\n')
+    io.write(prefix .. table.concat(args, ', '), '\n')
     io.flush()
     return ...
   end
@@ -178,7 +167,6 @@ function pimp:debug(...)
     if arg_type == 'table' then
       table.insert(data, pp:wrap(arg))
     else
-      --
       local res = type_constructor(arg)
       table.insert(data, res)
     end
@@ -188,10 +176,10 @@ function pimp:debug(...)
     local fmt_str = '%s%s: %s: %s\n'
     callname = tocolor(callname, 'custom_func')
     callname = callname .. ' return'
-    io.write(fmt_str:format(self.prefix, callpos, callname, table.concat(data, ', ')))
+    io.write(fmt_str:format(prefix, callpos, callname, table.concat(data, ', ')))
   else
     local fmt_str = '%s%s: %s\n'
-    io.write(fmt_str:format(self.prefix, callpos..infunc, table.concat(data, ', ')))
+    io.write(fmt_str:format(prefix, callpos..infunc, table.concat(data, ', ')))
   end
 
   io.flush()
@@ -202,6 +190,11 @@ end
 -- @param pref_str Pimp prefix
 function pimp:setPrefix(pref_str)
   self.prefix = tostring(pref_str)
+end
+
+--- Reset prefix
+function pimp:resetPrefix()
+  self.prefix = 'p'
 end
 
 --- Enable debug output

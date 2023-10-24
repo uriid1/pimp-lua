@@ -32,18 +32,6 @@ controls[92] = tostring('\\\\')
 controls[34] = tostring('\\"')
 controls[39] = tostring("\\'")
 
--- Maybe?
--- for i = 128, 255 do
---   local c
---   if i < 100 then
---     c = "0" .. tostring(i)
---   else
---     c = tostring(i)
---   end
-
---   controls[i] = tostring('\\' .. c)
--- end
-
 local function stringEscape(c)
   return controls[string.byte(c, 1)]
 end
@@ -66,7 +54,7 @@ local function type_constructor(arg)
     return tocolor(tostring(arg), arg_type)
   elseif arg_type == 'string' then
     -- If a string is passed
-    arg = string.gsub(arg, '[%c]', stringEscape)
+    arg = string.gsub(arg, '[%c\1-\39\92]', stringEscape)
     return tocolor(arg) .. ': [length ' .. tostring(#arg) .. ']'
   elseif arg_type == 'thread' then
     -- If a thread is passed

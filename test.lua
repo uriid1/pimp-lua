@@ -15,9 +15,9 @@ p(io.stderr)
 --
 -- Change prefix test
 --
-p:setPrefix('Test| ')
+p:setPrefix('Test')
 p('Wow! It\'s new prefix!')
-p:setPrefix('p| ')
+p:setPrefix('p')
 
 --
 -- Disable color test
@@ -67,7 +67,6 @@ local function func(arg1, ...)
   return p(arg1, ...)
 end
 func(1, '2', {})
-
 
 --
 -- Inspect Tables

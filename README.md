@@ -72,9 +72,9 @@ p| file.lua:6: 'World': [length 5]
 
 **Change prefix**
 ```lua
-p:setPrefix('Test| ')
+p:setPrefix('Test')
 p('Wow! It\'s new prefix!')
-p:setPrefix('p| ')
+p:setPrefix('p')
 ```
 ```bash
 Test| file.lua:2: 'Wow! It's new preffix!': [length 22]
