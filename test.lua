@@ -1,4 +1,4 @@
-local p = require 'pimp.init'
+local p = require '.pimp.init'
 -- p:disable() -- Disable debug output
 
 --

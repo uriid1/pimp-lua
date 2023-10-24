@@ -30,13 +30,43 @@ end
 -- @param filepath string The path to the file
 -- @param call_line number The line number of the function call
 -- @return string The found arguments
+local stack_find_call = {}
 local function find_call(filepath, call_line, curfunc)
-  -- local brackets_stack = {}
   local buff = ''
   local i = 0
+  local call_line_non_modify = call_line
 
   local open_brackets_count = 0 -- (
   local close_brackets_count = 0 -- )
+
+  if not stack_find_call[filepath] then
+    stack_find_call[filepath] = {
+      [call_line_non_modify] = {
+        filepath = filepath,
+        call_line = call_line_non_modify,
+        curfunc = curfunc,
+        buff = buff,
+        is_func = nil,
+      }
+    }
+  elseif not stack_find_call[filepath][call_line_non_modify] then
+    stack_find_call[filepath] = {
+      [call_line_non_modify] = {
+        filepath = filepath,
+        call_line = call_line_non_modify,
+        curfunc = curfunc,
+        buff = buff,
+        is_func = nil,
+      }
+    }
+  elseif stack_find_call[filepath][call_line_non_modify] then
+    local current = stack_find_call[filepath][call_line_non_modify]
+    if curfunc then
+      return current.buff:match(curfunc..'%((.+)%)'), true
+    end
+
+    return current.buff, current.is_func
+  end
 
   for line in io.lines(filepath) do
     i = i + 1
@@ -66,8 +96,12 @@ local function find_call(filepath, call_line, curfunc)
   buff = buff:sub(#pimp.module_name+2, -2)
   --  :gsub('[\n\t]', '')
 
-  return buff, buff:match('.+%(.*%)') ~= nil
+  -- Add to stack
+  local current = stack_find_call[filepath][call_line_non_modify]
+  current.buff = buff
+  current.is_func = buff:match('.+%(.*%)') ~= nil
 
+  return buff, current.is_func
 end
 
 ---

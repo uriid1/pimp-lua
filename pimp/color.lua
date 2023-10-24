@@ -30,40 +30,24 @@ local scheme = {
 -- @return string The formatted value with color codes.
 local function tocolor(val, type)
   type = type or 'string'
+  val = tostring(val)
 
-  if colors then
-    if type == 'function' then
-      return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
-    elseif type == 'custom_func' then
-      return scheme[type] .. tostring(val) .. scheme.reset
-    elseif type == 'thread' then
-      return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
-    elseif type == 'table_addr' then
-      return scheme[type] .. '<' .. tostring(val) .. '>' .. scheme.reset
-    elseif type == 'string' then
-      val = '\'' .. val .. '\''
-    end
-
-    if scheme[type] then
-      return scheme[type] .. tostring(val) .. scheme.reset
-    end
-
-    return scheme['nil'] .. tostring(val) .. scheme.reset
-  end
-
-  if type == 'function' then
-    return '<' .. tostring(val) .. '>'
-  elseif type == 'custom_func' then
-    return tostring(val)
-  elseif type == 'thread' then
-    return '<' .. tostring(val) .. '>'
-  elseif type == 'table_addr' then
-    return '<' .. tostring(val) .. '>'
-  elseif type == 'string' then
+  if type == 'string' then
     val = '\'' .. val .. '\''
   end
 
-  return tostring(val)
+  if colors == false then
+    if type ~= 'string' then
+      val = '<' .. val .. '>'
+    end
+    return val
+  end
+
+  if not scheme[type] then
+    return scheme['nil'] .. val .. scheme.reset
+  end
+
+  return scheme[type] .. val .. scheme.reset
 end
 
 --- Enable or disable colors
