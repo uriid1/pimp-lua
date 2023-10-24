@@ -22,9 +22,9 @@ p:setPrefix('p')
 --
 -- Disable color test
 --
-p:disableColor(false)
+p:disableColor()
 p('String without colors')
-p:enableColor(true)
+p:enableColor()
 
 --
 -- Disable test

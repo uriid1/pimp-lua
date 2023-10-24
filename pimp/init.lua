@@ -84,7 +84,6 @@ local function find_call(filepath, call_line, curfunc)
 
   -- Remove spaces
   buff = buff:gsub('  ', '')
-             -- :gsub('[%c]', '')
 
   if curfunc then
     return buff:match(curfunc..'%((.+)%)'), true
