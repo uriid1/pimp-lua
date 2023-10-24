@@ -13,37 +13,56 @@ local pimp = {
   use_colors = true,
 }
 
+--
+local function char_count(str, char)
+  local count = 0
+  for i = 1, #str do
+    if char == str:sub(i, i) then
+      count = count + 1
+    end
+  end
+
+  return count
+end
+
 --- Find the arguments passed to the function
 -- @local
 -- @param filepath string The path to the file
 -- @param call_line number The line number of the function call
 -- @return string The found arguments
 local function find_call(filepath, call_line)
+  -- local brackets_stack = {}
   local buff = ''
   local i = 0
+
+  local open_brackets_count = 0 -- (
+  local close_brackets_count = 0 -- )
 
   for line in io.lines(filepath) do
     i = i + 1
     -- Start capture
     if i == call_line then
       buff = buff .. line
-      if buff:sub(-1, -1) ~= ')' then
-        call_line = call_line + 1
-      else
+
+      open_brackets_count = open_brackets_count + char_count(line, '(')
+      close_brackets_count = close_brackets_count + char_count(line, ')')
+
+      if open_brackets_count == close_brackets_count then
         break
       end
+
+      call_line = call_line + 1
     end
   end
 
-  -- Capture function and format buffer
-  buff = buff
-   :match(pimp.module_name .. '%((.+)%)?')
-   :gsub('%s*', '')
-   :gsub('[\n\t]', '')
-   :gsub('{ ', '{')
-   :gsub(' }', '}')
+  -- Remove spaces
+  buff = buff:gsub('%s*', '')
 
-  return buff
+  -- Capture function and format buffer
+  buff = buff:sub(#pimp.module_name+2, -2)
+  --  :gsub('[\n\t]', '')
+
+  return buff, buff:match('.+%(.*%)') ~= nil
 end
 
 ---
@@ -62,7 +81,7 @@ function pimp:debug(...)
   if not self.prefix then
     local info = debug.getinfo(1, 'Sn')
     -- if info.what == 'Lua' then
-    --   return pp.pp(...)
+    --   return pp(...)
     -- else
     self.prefix = info.name .. '| '
     self.module_name = info.name
@@ -73,6 +92,12 @@ function pimp:debug(...)
   -- S - source, short_src, what, linedefined, lastlinedefined
   -- L - currentline
   local info = debug.getinfo(2, 'Sl')
+  local funcInfo = debug.getinfo(2, "n")
+
+  local infunc = ''
+  if funcInfo.namewhat ~= '' then
+    infunc = infunc ..' in '..tocolor(funcInfo.name..'(?)', 'custom_func')
+  end
 
   local linepos = info.currentline
   local filename = info.short_src
@@ -85,7 +110,7 @@ function pimp:debug(...)
 
   -- No arguments were passed
   if args_count == 0 then
-    io.write(self.prefix .. callpos, '\n')
+    io.write(self.prefix .. callpos .. infunc, '\n')
     io.flush()
     return ...
   end
@@ -98,8 +123,7 @@ function pimp:debug(...)
   end
 
   -- Find the function call
-  local callname = find_call(filepath, linepos)
-  local is_func = callname:match('.+%(.*%)') ~= nil
+  local callname, is_func = find_call(filepath, linepos)
 
   -- Handling a variable number of arguments
   local data = {}
@@ -119,10 +143,11 @@ function pimp:debug(...)
   if is_func then
     local fmt_str = '%s%s: %s: %s\n'
     callname = tocolor(callname, 'custom_func')
+    callname = callname .. ' return'
     io.write(fmt_str:format(self.prefix, callpos, callname, table.concat(data, ', ')))
   else
     local fmt_str = '%s%s: %s\n'
-    io.write(fmt_str:format(self.prefix, callpos, table.concat(data, ', ')))
+    io.write(fmt_str:format(self.prefix, callpos..infunc, table.concat(data, ', ')))
   end
 
   io.flush()

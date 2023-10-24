@@ -7,6 +7,7 @@ local function sum(a, b)
 end
 
 local function mv(a, b, c)
+  p('Message from local func')
   return a, b, c, true, 'foobar'
 end
 

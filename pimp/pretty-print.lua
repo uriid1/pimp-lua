@@ -94,7 +94,7 @@ end
 ---
 -- Print a pretty representation of an object.
 -- @param ... any objects to be printed.
-function M.pp(...)
+function M:pp(...)
   local args_count = select('#', ...)
   if args_count == 0 then
     io.write(M:wrap(nil), '\n')
@@ -103,7 +103,7 @@ function M.pp(...)
   end
 
   local data = {}
-  for i = 1, select('#', ...) do
+  for i = 1, args_count do
     local arg = select(i, ...)
     table.insert(data, M:wrap(arg))
   end
@@ -114,11 +114,6 @@ end
 
 ---
 -- Set up the module to be callable as a function, invoking the 'pp' function.
--- @param obj any The object to be printed.
-function M.__call(obj)
-  M.pp(obj)
-end
-
--- setmetatable(M, { __call = M.pp })
+setmetatable(M, { __call = M.pp })
 
 return M
