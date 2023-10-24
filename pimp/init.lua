@@ -30,7 +30,7 @@ end
 -- @param filepath string The path to the file
 -- @param call_line number The line number of the function call
 -- @return string The found arguments
-local function find_call(filepath, call_line)
+local function find_call(filepath, call_line, curfunc)
   -- local brackets_stack = {}
   local buff = ''
   local i = 0
@@ -56,13 +56,18 @@ local function find_call(filepath, call_line)
   end
 
   -- Remove spaces
-  buff = buff:gsub('%s*', '')
+  buff = buff:gsub('  ', '')
+
+  if curfunc then
+    return buff:match(curfunc..'%((.+)%)'), true
+  end
 
   -- Capture function and format buffer
   buff = buff:sub(#pimp.module_name+2, -2)
   --  :gsub('[\n\t]', '')
 
   return buff, buff:match('.+%(.*%)') ~= nil
+
 end
 
 ---
@@ -79,24 +84,33 @@ function pimp:debug(...)
 
   -- Set the prefix based on the loaded module's name
   if not self.prefix then
-    local info = debug.getinfo(1, 'Sn')
-    -- if info.what == 'Lua' then
-    --   return pp(...)
-    -- else
+    local info = debug.getinfo(1)
+    if not info.name then
+      info.name = self.module_name
+    end
+
     self.prefix = info.name .. '| '
     self.module_name = info.name
-    -- end
   end
 
   -- Get information about the calling location
   -- S - source, short_src, what, linedefined, lastlinedefined
   -- L - currentline
-  local info = debug.getinfo(2, 'Sl')
-  local funcInfo = debug.getinfo(2, "n")
+  local info = debug.getinfo(2)
 
   local infunc = ''
-  if funcInfo.namewhat ~= '' then
-    infunc = infunc ..' in '..tocolor(funcInfo.name..'(?)', 'custom_func')
+  if info.namewhat ~= '' then
+    if info.isvararg and info.nparams == 1 then
+      info.name = info.name .. '(...)'
+    elseif info.linedefined > 0 then
+      local filepath = info.source:match('@(.+)')
+      local args, _ = find_call(filepath, info.linedefined, info.name)
+      info.name = info.name .. '('..args..')'
+    else
+      info.name = info.name .. '(?)'
+    end
+
+    infunc = infunc ..' in '..tocolor(info.name, 'custom_func')
   end
 
   local linepos = info.currentline
@@ -180,11 +194,14 @@ function pimp:enableFullPath()
   self.full_path = true
 end
 
---- Enable or disable colors
--- @param val boolean
-function pimp:setUseColors(val)
-  self.use_colors = val
-  color.setUseColors(val)
+--- Disable colour output
+function pimp:disableColor()
+  color.setUseColors(false)
+end
+
+--- Enable colour output
+function pimp:enableColor()
+  color.setUseColors(true)
 end
 
 ---

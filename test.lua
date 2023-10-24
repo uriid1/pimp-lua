@@ -1,53 +1,80 @@
 local p = require 'pimp.init'
 -- p:disable() -- Disable debug output
 
-local function sum(a, b)
-  local result = a + b
-  return result
+--
+-- Inspect Variables
+--
+-- p(_G)
+p('Hello, World!')
+p(10000, math.pi)
+p(true, false)
+p(function() end)
+p(coroutine.create(function() end))
+p(io.stderr)
+
+--
+-- Change prefix test
+--
+p:setPrefix('Test| ')
+p('Wow! It\'s new prefix!')
+p:setPrefix('p| ')
+
+--
+-- Disable color test
+--
+p:disableColor(false)
+p('String without colors')
+p:enableColor(true)
+
+--
+-- Disable test
+--
+p:disable()
+p('Hello?')
+p:enable()
+
+--
+-- Inspect Functions
+--
+local function foo(t)
+  return t, true
 end
+
+p(
+  foo({
+    'apple', 'banana', 'orange'
+  })
+)
 
 local function mv(a, b, c)
   p('Message from local func')
   return a, b, c, true, 'foobar'
 end
-
-local function getTable()
-  return {
-    name = "John",
-    age = 30,
-    city = "New York"
-  }, {1, 2, 3}
-end
-
-p(sum(7, 5))
 p(mv(1, 2, 3))
-p('Hello, World!')
-p(10000)
-p()
-p(true)
 
-p(coroutine.create(sum))
-local co = coroutine.create(sum)
-p(co)
+local _ = (function(...)
+  p(...)
+  return true
+end)(1, 2, 3)
 
-p(function() end)
--- For tarantool
-if box then p(box.NULL) end
+local function infunc(a, b)
+  p(a, b)
+  return a + b
+end
+p(infunc(10, 5))
 
-p:setPrefix('Test| ')
-p(7, 'hello', {})
-p('foo', co, sum(4, 12))
+local function func(arg1, ...)
+  return p(arg1, ...)
+end
+func(1, '2', {})
 
-p:setPrefix('Disable colors| ')
-p:setUseColors(false)
-p('String without colors')
-p:setUseColors(true)
-p:setPrefix('p| ')
 
--- PP array
+--
+-- Inspect Tables
+--
 p({1, 2, 3})
 
-local obj = {
+local t = {
   message = {
     chat = {
       title = 'Кто съел мороженое?',
@@ -65,24 +92,6 @@ local obj = {
   empty_table = {},
   NULL = box and box.NULL or ':)'
 }
+t.recursive = t
 
-obj.recursive = obj
-
-p(obj)
-
---
-p:disable()
-p(getTable())
-p:enable()
-
-local function foo(t)
-  return t, true
-end
-
-p(
-  foo({
-    'apple',
-    'banana',
-    'orange'
-  })
-)
+p(t)
