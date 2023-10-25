@@ -120,6 +120,12 @@ function pimp:debug(...)
   -- Get information about the calling location
   local info = debug.getinfo(2)
 
+  -- Interactive mode
+  if info.source == '=stdin' or info.source == '=[C]' then
+    pp(...)
+    return ...
+  end
+
   local infunc = ''
   if info.namewhat ~= '' then
     if info.isvararg and info.nparams == 1 then
