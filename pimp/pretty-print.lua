@@ -78,20 +78,20 @@ function M:wrap(obj, indent, seen)
         end
       end
 
-      local color_type = 'field'
-
-      if _type == 'number' then
-        color_type = 'number'
-      end
-
       if self.debug and val_is_table then
         local table_adrr = tostring(val):match('table: (.+)')
         str = str .. fstr:format(
           string.rep(self.tab_char, indent + 2),
-          tocolor(key, color_type),
+          tocolor(key, 'field'),
           tocolor(table_adrr, 'address')
         )
       else
+        local color_type = 'field'
+
+        if type(key) == 'number' then
+          color_type = 'number'
+        end
+
         str = str .. fstr:format(
           string.rep(self.tab_char, indent + 2),
           tocolor(key, color_type)

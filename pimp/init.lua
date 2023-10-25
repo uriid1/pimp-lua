@@ -7,14 +7,23 @@ local tocolor = color.tocolor
 
 local DEFAULT_PREFIX = 'p'
 local DEFAULT_PREFIX_SEP = '|> '
+local DEFAULT_MODULE_NAME = 'p'
 
 local pimp = {
   prefix = DEFAULT_PREFIX,
   prefix_sep = DEFAULT_PREFIX_SEP,
+  module_name = DEFAULT_MODULE_NAME,
   output = true,
   full_path = true,
+  match_path = '',
   colors = true,
 }
+
+-- Escaping
+function escape(text)
+  local result, _ = text:gsub('[%(%)%.%%%+%-%*%?%[%]%^%$]', '%%%0')
+  return result
+end
 
 --
 local function char_count(str, char)
@@ -94,12 +103,16 @@ local function find_call(filepath, call_line, curfunc)
   end
 
   -- Capture function and format buffer
-  buff = buff:sub(#pimp.prefix+2, -2)
+  buff = buff:match(pimp.module_name..'%((.+)%)')
 
   -- Add to stack
   local current = stack_find_call[filepath][call_line_non_modify]
   current.buff = buff
-  current.is_func = buff:match('.+%(.*%)') ~= nil
+  if buff then
+    current.is_func = buff:match('.+%(.*%)') ~= nil
+  else
+    current.is_func = false
+  end
 
   return buff, current.is_func
 end
@@ -133,7 +146,11 @@ function pimp:debug(...)
     elseif info.linedefined > 0 then
       local filepath = info.source:match('@(.+)')
       local func_args, _ = find_call(filepath, info.linedefined, info.name)
-      info.name = info.name .. '('..func_args..')'
+      if func_args then
+        info.name = info.name .. '('..func_args..')'
+      else
+        info.name = info.name .. '(?)'
+      end
     else
       info.name = info.name .. '(?)'
     end
@@ -145,6 +162,14 @@ function pimp:debug(...)
   local filename = info.short_src
   if self.full_path == false then
     filename = filename:match('.+/(.-)$')
+  else
+    if self.match_path ~= '' then
+      -- local match_path = filename:gsub(escape(self.match_path), '')
+      local match_path = filename:match(self.match_path)
+      if match_path then
+        filename = match_path
+      end
+    end
   end
 
   local filepath = info.source:match('@(.+)')
@@ -221,6 +246,11 @@ end
 --- Disable debug output
 function pimp:enable()
   self.output = true
+end
+
+--- Matching path
+function pimp:matchPath(str)
+  self.match_path = tostring(str)
 end
 
 --- Disable full path output
