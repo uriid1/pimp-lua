@@ -88,4 +88,11 @@ p:resetPrefix()
 INFO|-> file.lua:2: 'Wow! It's new preffix!': [length 22]
 ```
 
+**Limitations**
+*Avoid lines like:*
+```lua
+my_func( p(param_1), p(param_2), p(param_3) )
+```
+This is because the result of the capture will be `param_3`. Since the Lua debug module only reports where the function was called and does not provide the function's position.
+
 *See test.lua for more examples
