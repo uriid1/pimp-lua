@@ -34,12 +34,18 @@ local function tocolor(val, type)
 
   if type == 'string' then
     val = '\'' .. val .. '\''
+  else
+    if type == 'table_addr' or
+       type == 'function' or
+       type == 'thread' or
+       type == 'cdata' or
+       type == 'userdata'
+    then
+      val = '<' .. val .. '>'
+    end
   end
 
   if colors == false then
-    if type ~= 'string' then
-      val = '<' .. val .. '>'
-    end
     return val
   end
 
