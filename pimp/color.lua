@@ -6,12 +6,13 @@ local colors = true
 local scheme = {
   ["reset"] = "\27[0m",
 
-  ["field"] = '\27[0;37m',
+  ["field"] = '\27[36m',
   ["cycle"] = '\27[0;35m',
   ["error"] = '\27[0;91m',
   ["address"] = '\27[0;90m',
   ["table_addr"] = "\27[0;35m",
   ["custom_func"] = "\27[0;34m",
+  ["tab_char"] = "\27[38;5;233m",
 
   ["string"] = "\27[0;93m",
   ["number"] = "\27[38;5;208m",

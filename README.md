@@ -45,11 +45,11 @@ local t = {
 p(t)
 ```
 ```
-p| test.lua:1: {
+p|> test.lua:1: {
   age = 30: [number],
   name = 'John': [length 4],
   city = 'New York': [length 8],
-}
+}: [table]
 ```
 
 **Inspect Functions**

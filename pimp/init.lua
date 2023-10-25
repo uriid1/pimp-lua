@@ -17,24 +17,6 @@ local pimp = {
 }
 
 --
-local function isArray(t)
-  if type(t) ~= 'table' then
-    return false
-  end
-
-  local i = 1
-  for _ in next, t do
-    if t[i] == nil then
-      return false, nil
-    end
-
-    i = i + 1
-  end
-
-  return true, i-1
-end
-
---
 local function char_count(str, char)
   local count = 0
   for i = 1, #str do
@@ -193,14 +175,6 @@ function pimp:debug(...)
     -- Handle table type
     if arg_type == 'table' then
       local label_type = ''
-      local is_arr, arr_count = isArray(arg)
-
-      if is_arr then
-        label_type = label_type .. ': [array '..arr_count..']'
-      else
-        label_type = label_type .. ': [table]'
-      end
-
       table.insert(data, pp:wrap(arg)..label_type)
     else
       local res = type_constructor(arg)

@@ -7,7 +7,26 @@ local tocolor = color.tocolor
 
 local M = {
   debug = false,
+  tab_char = ' ',
 }
+
+--
+local function isArray(t)
+  if type(t) ~= 'table' then
+    return false
+  end
+
+  local i = 1
+  for _ in next, t do
+    if t[i] == nil then
+      return false, nil
+    end
+
+    i = i + 1
+  end
+
+  return true, i-1
+end
 
 --- Wrap an object for pretty printing.
 -- @param obj any The object to be pretty-printed.
@@ -59,17 +78,23 @@ function M:wrap(obj, indent, seen)
         end
       end
 
+      local color_type = 'field'
+
+      if _type == 'number' then
+        color_type = 'number'
+      end
+
       if self.debug and val_is_table then
         local table_adrr = tostring(val):match('table: (.+)')
         str = str .. fstr:format(
-          string.rep(" ", indent + 2),
-          tocolor(key, 'field'),
+          string.rep(self.tab_char, indent + 2),
+          tocolor(key, color_type),
           tocolor(table_adrr, 'address')
         )
       else
         str = str .. fstr:format(
-          string.rep(' ', indent + 2),
-          tocolor(key, 'field')
+          string.rep(self.tab_char, indent + 2),
+          tocolor(key, color_type)
         )
       end
 
@@ -84,7 +109,16 @@ function M:wrap(obj, indent, seen)
       str = str .. result .. ',\n'
     end
 
-    str = str .. string.rep(' ', indent) .. tocolor('}', 'table')
+    --
+    local label_type = ''
+    local is_arr, arr_count = isArray(obj)
+
+    if is_arr then
+      label_type = label_type .. ': [array '..arr_count..']'
+    end
+
+    str = str .. string.rep(self.tab_char, indent) .. tocolor('}', 'table')..label_type
+
     return str
   else
     return type_constructor(obj)
