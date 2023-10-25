@@ -68,6 +68,12 @@ local function func(arg1, ...)
 end
 func(1, '2', {})
 
+function test(...)
+  return ...
+end
+
+test('send', '_error', 'maint()', p(test), 'auth', 'updateUser')
+
 --
 -- Inspect Tables
 --

@@ -19,12 +19,6 @@ local pimp = {
   colors = true,
 }
 
--- Escaping
-function escape(text)
-  local result, _ = text:gsub('[%(%)%.%%%+%-%*%?%[%]%^%$]', '%%%0')
-  return result
-end
-
 --
 local function char_count(str, char)
   local count = 0
@@ -103,7 +97,11 @@ local function find_call(filepath, call_line, curfunc)
   end
 
   -- Capture function and format buffer
-  buff = buff:match(pimp.module_name..'%((.+)%)')
+  buff = buff:match('.*('..pimp.module_name..'%(.+%))')
+  if buff then
+    buff = buff:match('%b()')
+    buff = buff:match('^%((.-)%)$')
+  end
 
   -- Add to stack
   local current = stack_find_call[filepath][call_line_non_modify]
@@ -164,7 +162,6 @@ function pimp:debug(...)
     filename = filename:match('.+/(.-)$')
   else
     if self.match_path ~= '' then
-      -- local match_path = filename:gsub(escape(self.match_path), '')
       local match_path = filename:match(self.match_path)
       if match_path then
         filename = match_path
@@ -193,6 +190,12 @@ function pimp:debug(...)
   local callname, is_func = find_call(filepath, linepos)
 
   -- Handling a variable number of arguments
+  local is_print_agrs_name = true
+
+  if not callname then
+    is_print_agrs_name = false
+  end
+
   local data = {}
   for i = 1, args_count do
     local arg = args[i]
@@ -201,9 +204,23 @@ function pimp:debug(...)
     if arg_type == 'table' then
       local label_type = ''
       table.insert(data, pp:wrap(arg)..label_type)
+
+      if callname and callname:match('{.+}') then
+        is_print_agrs_name = false
+      end
     else
       local res = type_constructor(arg)
       table.insert(data, res)
+
+      -- For print args
+      if arg_type == 'string' or
+        arg_type == 'number' or
+        arg_type == 'boolean' or
+        -- arg_type == 'function' or
+        arg_type == 'thread'
+      then
+        is_print_agrs_name = false
+      end
     end
   end
 
@@ -214,7 +231,11 @@ function pimp:debug(...)
     io.write(fmt_str:format(prefix, callpos, callname, table.concat(data, ', ')))
   else
     local fmt_str = '%s%s: %s\n'
-    io.write(fmt_str:format(prefix, callpos..infunc, table.concat(data, ', ')))
+    if is_print_agrs_name then
+      io.write(fmt_str:format(prefix, callpos..infunc..': '..callname, table.concat(data, ', ')))
+    else
+      io.write(fmt_str:format(prefix, callpos..infunc, table.concat(data, ', ')))
+    end
   end
 
   io.flush()
