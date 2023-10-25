@@ -15,9 +15,9 @@ p(io.stderr)
 --
 -- Change prefix test
 --
-p:setPrefix('Test')
+p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
 p('Wow! It\'s new prefix!')
-p:setPrefix('p')
+p:resetPrefix()
 
 --
 -- Disable color test

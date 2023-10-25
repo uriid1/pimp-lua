@@ -5,11 +5,15 @@ local type_constructor = require 'pimp.type_constructor'
 local color = require 'pimp.color'
 local tocolor = color.tocolor
 
+local DEFAULT_PREFIX = 'p'
+local DEFAULT_PREFIX_SEP = '|> '
+
 local pimp = {
-  prefix = 'p',
+  prefix = DEFAULT_PREFIX,
+  prefix_sep = DEFAULT_PREFIX_SEP,
   output = true,
   full_path = true,
-  use_colors = true,
+  colors = true,
 }
 
 --
@@ -111,7 +115,7 @@ function pimp:debug(...)
 
   local args = {...}
   local args_count = #args
-  local prefix = self.prefix .. '| '
+  local prefix = self.prefix .. self.prefix_sep
 
   -- Get information about the calling location
   local info = debug.getinfo(2)
@@ -185,15 +189,21 @@ function pimp:debug(...)
   return ...
 end
 
---- Set prefix
--- @param pref_str Pimp prefix
-function pimp:setPrefix(pref_str)
-  self.prefix = tostring(pref_str)
+--- Set prefix and separator
+-- @param param Table { prefix='cool', sep='->' }
+function pimp:setPrefix(param)
+  if param.prefix then
+    self.prefix = tostring(param.prefix)
+  end
+  if param.sep then
+    self.prefix_sep = tostring(param.sep)
+  end
 end
 
 --- Reset prefix
 function pimp:resetPrefix()
-  self.prefix = 'p'
+  self.prefix = DEFAULT_PREFIX
+  self.prefix_sep = DEFAULT_PREFIX_SEP
 end
 
 --- Enable debug output
@@ -218,11 +228,13 @@ end
 
 --- Disable colour output
 function pimp:disableColor()
+  self.colors = false
   color.setUseColors(false)
 end
 
 --- Enable colour output
 function pimp:enableColor()
+  self.colors = true
   color.setUseColors(true)
 end
 

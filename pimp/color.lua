@@ -10,17 +10,17 @@ local scheme = {
   ["cycle"] = '\27[0;35m',
   ["error"] = '\27[0;91m',
   ["address"] = '\27[0;90m',
+  ["table_addr"] = "\27[0;35m",
+  ["custom_func"] = "\27[0;34m",
 
   ["string"] = "\27[0;93m",
   ["number"] = "\27[38;5;208m",
   ["boolean"] = "\27[38;5;220m",
-  ["table_addr"] = "\27[0;35m",
   ["table"] = "\27[0;37m",
-  ["userdata"] = "\27[0;36m",
-  ["thread"] = "\27[0;35m",
   ["function"] = "\27[0;35m",
+  ["thread"] = "\27[0;35m",
+  ["userdata"] = "\27[0;36m",
   ["cdata"] = "\27[0;35m",
-  ["custom_func"] = "\27[0;34m",
   ["nil"] = "\27[0;35m",
 }
 
