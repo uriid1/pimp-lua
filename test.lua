@@ -105,8 +105,8 @@ This is because the result of the capture will be test_3.
 Since the Lua debug module only reports the line number
 where the function was called and does not provide the function's position.
 ]]
--- function test_1(a, ...) p(); return a, ... end
--- function test_2(b, ...) p(); return b, ... end
--- function test_3(c, ...) p(); return c, ... end
+function test_1(a, ...) p(); return a, ... end
+function test_2(b, ...) p(); return b, ... end
+function test_3(c, ...) p(); return c, ... end
 
--- test_1('foo', p(test_1), 'bar', p(test_2), 'baz', p(test_3))
+test_1('foo', p(test_1), 'bar', p(test_2), 'baz', p(test_3))

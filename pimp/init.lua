@@ -20,6 +20,28 @@ local pimp = {
 }
 
 --
+local function find_name_by_addr(addr)
+  for i = 1, math.huge do
+    local name, value = debug.getlocal(3, i)
+    if not name and not value then
+      break
+    end
+
+    if value == addr then
+      return name
+    end
+  end
+
+  for k, v in pairs(_G) do
+    if v == addr then
+      return k
+    end
+  end
+
+  return nil
+end
+
+--
 local function char_count(str, char)
   local count = 0
   for i = 1, #str do
@@ -224,19 +246,23 @@ function pimp:debug(...)
       if callname and callname:match('{.+}') then
         is_print_agrs_name = false
       end
+    elseif arg_type == 'function' or
+           arg_type == 'thread'
+    then
+      callname = find_name_by_addr(arg) or callname
+      local res = type_constructor(arg)
+      table.insert(data, res)
     else
       local res = type_constructor(arg)
       table.insert(data, res)
+    end
 
-      -- For print args
-      if arg_type == 'string' or
-        arg_type == 'number' or
-        arg_type == 'boolean' or
-        -- arg_type == 'function' or
-        arg_type == 'thread'
-      then
-        is_print_agrs_name = false
-      end
+    -- For print args
+    if arg_type == 'string' or
+      arg_type == 'number' or
+      arg_type == 'boolean'
+    then
+      is_print_agrs_name = false
     end
   end
 
