@@ -15,9 +15,16 @@ local pimp = {
   module_name = DEFAULT_MODULE_NAME,
   output = true,
   full_path = true,
+  short_output = false,
   match_path = '',
   colors = true,
 }
+
+--
+local function write(...)
+  io.write(..., '\n')
+  io.flush()
+end
 
 --
 local function find_name_by_addr(addr)
@@ -147,7 +154,7 @@ function pimp:debug(...)
   end
 
   local args = {...}
-  local args_count = #args
+  local args_count = select('#', ...)
   local prefix = self.prefix .. self.prefix_sep
 
   -- Get information about the calling location
@@ -171,7 +178,14 @@ function pimp:debug(...)
             break
           end
 
-          func_args = func_args .. name..': '..tostring(value)
+          value = tostring(value)
+
+          if value:len() > 25 then
+            value = value:gsub('[\r\n\t]', '')
+            value = '[string ' .. value:len()..']'
+          end
+
+          func_args = func_args .. name..': '..value
           if i ~= info.nparams then
            func_args = func_args .. ', '
           end
@@ -191,7 +205,7 @@ function pimp:debug(...)
       info.name = info.name .. '(?)'
     end
 
-    infunc = infunc ..' in '..tocolor(info.name, 'custom_func')
+    infunc = infunc ..' in '..tocolor(info.name, 'custom_func')..':'
   end
 
   local linepos = info.currentline
@@ -212,40 +226,40 @@ function pimp:debug(...)
 
   -- No arguments were passed
   if args_count == 0 and info.isvararg == false then
-    io.write(prefix .. callpos .. infunc, '\n')
-    io.flush()
+    write(prefix .. callpos .. infunc .. type_constructor())
+
     return ...
   end
 
   -- Handling the 'C' type (for C functions)
   if info.what == 'C' then
-    io.write(prefix .. table.concat(args, ', '), '\n')
-    io.flush()
+    write(prefix .. table.concat(args, ', '))
+
     return ...
   end
 
   -- Find the function call
   local callname, is_func = find_call(filepath, linepos)
+  local raw_callname = callname
 
-  -- Handling a variable number of arguments
-  local is_print_agrs_name = true
-
-  if not callname then
-    is_print_agrs_name = false
-  end
+  local is_print_args = true
 
   local data = {}
   for i = 1, args_count do
-    local arg = args[i]
+    local arg = select(i, ...)
     local arg_type = type(arg)
+
     -- Handle table type
     if arg_type == 'table' then
       local label_type = ''
       table.insert(data, pp:wrap(arg)..label_type)
 
-      if callname and callname:match('{.+}') then
-        is_print_agrs_name = false
+      if args_count == 1 then
+        if callname and callname:find('{.+}') then
+          is_print_args = false
+        end
       end
+
     elseif arg_type == 'function' or
            arg_type == 'thread'
     then
@@ -253,40 +267,41 @@ function pimp:debug(...)
       local res = type_constructor(arg)
       table.insert(data, res)
     else
+      is_print_args = false
       local res = type_constructor(arg)
       table.insert(data, res)
     end
-
-    -- For print args
-    if arg_type == 'string' or
-      arg_type == 'number' or
-      arg_type == 'boolean'
-    then
-      is_print_agrs_name = false
-    end
   end
 
+  local fmt_str = ''
   if is_func then
-    local fmt_str = '%s%s: %s: %s\n'
-    callname = tocolor(callname, 'custom_func')
-    callname = callname .. ' return'
-    io.write(fmt_str:format(prefix, callpos, callname, table.concat(data, ', ')))
-  else
-    local fmt_str = ''
-    if infunc == '' then
-      fmt_str = '%s%s: %s\n'
-    else
-      fmt_str = '%s%s %s\n'
-    end
+    fmt_str = '%s%s: %s return %s'
+    raw_callname = tocolor(raw_callname, 'custom_func')
 
-    if is_print_agrs_name then
-      io.write(fmt_str:format(prefix, callpos..infunc..': '..callname, table.concat(data, ', ')))
-    else
-      io.write(fmt_str:format(prefix, callpos..infunc, table.concat(data, ', ')))
-    end
+    write(
+      fmt_str:format(prefix, callpos, raw_callname, table.concat(data, ', '))
+    )
+
+    return ...
   end
 
-  io.flush()
+  local name = ''
+  if infunc == '' then
+    if callname and is_print_args then
+      name = ' ' .. callname
+    end
+
+    fmt_str = '%s%s: %s'
+  else
+    fmt_str = '%s%s %s'
+  end
+
+  if self.short_output then
+    write(fmt_str:format(prefix, callpos, table.concat(data, ', ')))
+  else
+    write(fmt_str:format(prefix, callpos..infunc..name, table.concat(data, ', ')))
+  end
+
   return ...
 end
 
@@ -315,6 +330,15 @@ end
 --- Disable debug output
 function pimp:enable()
   self.output = true
+end
+
+--- Disable/Enable short output
+function pimp:short(val)
+  if val ~= nil then
+    self.short_output = val and true or false
+  else
+    self.short_output = not self.short_output
+  end
 end
 
 --- Matching path

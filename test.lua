@@ -9,8 +9,10 @@ p(10000, math.pi)
 p(true, false)
 p(0/0, -1/0, 1/0)
 p(function() end)
+p(function() end, function() end)
 p(coroutine.create(function() end))
 p(io.stderr)
+p(1, nil, 2, nil)
 
 --
 -- Change prefix test
@@ -100,13 +102,8 @@ p(t)
 --
 -- NOT SUPPORT
 --
---[[
-This is because the result of the capture will be test_3.
-Since the Lua debug module only reports the line number
-where the function was called and does not provide the function's position.
-]]
 function test_1(a, ...) p(); return a, ... end
 function test_2(b, ...) p(); return b, ... end
 function test_3(c, ...) p(); return c, ... end
 
-test_1('foo', p(test_1), 'bar', p(test_2), 'baz', p(test_3))
+test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
