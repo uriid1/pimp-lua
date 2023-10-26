@@ -62,7 +62,7 @@ end
 local result_sum = p(sum(10, 5))
 ```
 ```
-p|> file.lua:5: in sum(a, b): 10: [number], 5: [number]
+p|> file.lua:5 in sum(a: 10, b: 5) 10: [number], 5: [number]
 p|> file.lua:6: sum(10, 5) return: 15: [number]
 ```
 
