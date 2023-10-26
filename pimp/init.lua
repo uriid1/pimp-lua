@@ -128,8 +128,13 @@ function pimp:debug(...)
   local args_count = #args
   local prefix = self.prefix .. self.prefix_sep
 
+  -- Change module name
+  -- local module_name, _ = debug.getlocal(2, 1)
+  -- pp(module_name)
+
   -- Get information about the calling location
   local info = debug.getinfo(2)
+  -- pp(info)
 
   -- Interactive mode
   if info.source == '=stdin' or info.source == '=[C]' then
@@ -139,13 +144,29 @@ function pimp:debug(...)
 
   local infunc = ''
   if info.namewhat ~= '' then
-    if info.isvararg and info.nparams == 1 then
-      info.name = info.name .. '(...)'
-    elseif info.linedefined > 0 then
-      local filepath = info.source:match('@(.+)')
-      local func_args, _ = find_call(filepath, info.linedefined, info.name)
-      if func_args then
-        info.name = info.name .. '('..func_args..')'
+    if info.linedefined > 0 then
+      local func_args = ''
+      if info.nparams > 0 then
+        -- Get local func vars
+        for i = 1, info.nparams do
+          local name, value = debug.getlocal(2, i)
+          if not name and not value then
+            break
+          end
+
+          func_args = func_args .. name..': '..tostring(value)
+          if i ~= info.nparams then
+           func_args = func_args .. ', '
+          end
+        end
+
+        info.name = info.name .. '('..func_args
+
+        if info.isvararg then
+          info.name = info.name .. ', ...'
+        end
+
+        info.name = info.name ..')'
       else
         info.name = info.name .. '(?)'
       end
@@ -173,7 +194,7 @@ function pimp:debug(...)
   local callpos = filename .. ':' .. linepos
 
   -- No arguments were passed
-  if args_count == 0 then
+  if args_count == 0 and info.isvararg == false then
     io.write(prefix .. callpos .. infunc, '\n')
     io.flush()
     return ...
@@ -227,7 +248,9 @@ function pimp:debug(...)
   if is_func then
     local fmt_str = '%s%s: %s: %s\n'
     callname = tocolor(callname, 'custom_func')
-    callname = callname .. ' return'
+    if info.nparams > 0 then
+      callname = callname .. ' return'
+    end
     io.write(fmt_str:format(prefix, callpos, callname, table.concat(data, ', ')))
   else
     local fmt_str = '%s%s: %s\n'

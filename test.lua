@@ -4,51 +4,52 @@ local p = require '.pimp.init'
 --
 -- Inspect Variables
 --
-p('Hello, World!')
-p(10000, math.pi)
-p(true, false)
-p(0/0, -1/0, 1/0)
-p(function() end)
-p(coroutine.create(function() end))
-p(io.stderr)
+-- p('Hello, World!')
+-- p(10000, math.pi)
+-- p(true, false)
+-- p(0/0, -1/0, 1/0)
+-- p(function() end)
+-- p(coroutine.create(function() end))
+-- p(io.stderr)
 
---
--- Change prefix test
---
-p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
-p('Wow! It\'s new prefix!')
-p:resetPrefix()
+-- --
+-- -- Change prefix test
+-- --
+-- p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
+-- p('Wow! It\'s new prefix!')
+-- p:resetPrefix()
 
---
--- Disable color test
---
-p:disableColor()
-p('String without colors')
-p:enableColor()
+-- --
+-- -- Disable color test
+-- --
+-- p:disableColor()
+-- p('String without colors')
+-- p:enableColor()
 
---
--- Disable test
---
-p:disable()
-p('Hello?')
-p:enable()
+-- --
+-- -- Disable test
+-- --
+-- p:disable()
+-- p('Hello?')
+-- p:enable()
 
---
--- Inspect Functions
---
-local function foo(t)
-  return t, true
-end
+-- --
+-- -- Inspect Functions
+-- --
+-- local function foo(t)
+--   return t, true
+-- end
 
-p(
-  foo({
-    'apple', 'banana', 'orange'
-  })
-)
+-- p(
+--   foo({
+--     'apple', 'banana', 'orange'
+--   })
+-- )
 
-local function mv(a, b, c)
+local function mv(mv, b, c, d, m)
+  local a = 'asd'
   p('Message from local func')
-  return a, b, c, true, 'foobar'
+  return mv, b, c, true, 'foobar'
 end
 p(mv(1, 2, 3))
 
@@ -64,41 +65,44 @@ end
 p(infunc(10, 5))
 
 local function func(arg1, ...)
+  p()
   return p(arg1, ...)
 end
 func(1, '2', {})
 
-function test(...)
-  return ...
-end
+-- function test_1(...) return... end
+-- function test_2(...) return ... end
+-- function test_3(...) return ... end
 
-test('send', '_error', 'maint()', p(test), 'auth', 'updateUser')
+-- test_1('foo', p(test_1), 'bar', p(test_2), 'baz', p(test_3))
 
---
--- Inspect Tables
---
-p({1, 2, 3})
+-- p(test_1(...))
 
-local t = {
-  message = {
-    chat = {
-      title = 'Кто съел мороженое?',
-    }
-  },
+-- --
+-- -- Inspect Tables
+-- --
+-- p({1, 2, 3})
 
-  ['array'] = {
-    'apple', 'banana', 'orange'
-  },
+-- local t = {
+--   message = {
+--     chat = {
+--       title = 'Кто съел мороженое?',
+--     }
+--   },
 
-  inf = 1/0,
-  nan = 0/0,
-  boolean = true,
-  string = '\tHello,\r\nworld!\r\n',
-  func = function() end,
-  thread = coroutine.create(function() end),
-  empty_table = {},
-  NULL = box and box.NULL or ':)'
-}
-t.recursive = t
+--   ['array'] = {
+--     'apple', 'banana', 'orange'
+--   },
 
-p(t)
+--   inf = 1/0,
+--   nan = 0/0,
+--   boolean = true,
+--   string = '\tHello,\r\nworld!\r\n',
+--   func = function() end,
+--   thread = coroutine.create(function() end),
+--   empty_table = {},
+--   NULL = box and box.NULL or ':)'
+-- }
+-- t.recursive = t
+
+-- p(t)

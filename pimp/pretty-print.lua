@@ -10,6 +10,13 @@ local M = {
   tab_char = ' ',
 }
 
+local merge
+function merge(t1, t2)
+  for k, v in pairs(t2) do
+    t1[k] = v
+  end
+end
+
 --
 local function isArray(t)
   if type(t) ~= 'table' then
@@ -46,6 +53,10 @@ function M:wrap(obj, indent, seen)
       return tocolor('<cycle: ' .. table_adrr.. tocolor('>', 'cycle'), 'cycle')
     end
     seen[obj] = true
+
+    if self.debug then
+      merge(obj, getmetatable(obj))
+    end
 
     -- Detect empty table
     local is_empty = not next(obj)
