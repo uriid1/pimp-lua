@@ -128,13 +128,8 @@ function pimp:debug(...)
   local args_count = #args
   local prefix = self.prefix .. self.prefix_sep
 
-  -- Change module name
-  -- local module_name, _ = debug.getlocal(2, 1)
-  -- pp(module_name)
-
   -- Get information about the calling location
   local info = debug.getinfo(2)
-  -- pp(info)
 
   -- Interactive mode
   if info.source == '=stdin' or info.source == '=[C]' then
@@ -248,12 +243,16 @@ function pimp:debug(...)
   if is_func then
     local fmt_str = '%s%s: %s: %s\n'
     callname = tocolor(callname, 'custom_func')
-    if info.nparams > 0 then
-      callname = callname .. ' return'
-    end
+    callname = callname .. ' return'
     io.write(fmt_str:format(prefix, callpos, callname, table.concat(data, ', ')))
   else
-    local fmt_str = '%s%s: %s\n'
+    local fmt_str = ''
+    if infunc == '' then
+      fmt_str = '%s%s: %s\n'
+    else
+      fmt_str = '%s%s %s\n'
+    end
+
     if is_print_agrs_name then
       io.write(fmt_str:format(prefix, callpos..infunc..': '..callname, table.concat(data, ', ')))
     else
