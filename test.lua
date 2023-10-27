@@ -4,15 +4,23 @@ local p = require '.pimp.init'
 --
 -- Inspect Variables
 --
-p('Hello, World!')
-p(10000, math.pi)
-p(true, false)
-p(0/0, -1/0, 1/0)
+p('Pimp Module!')
+p(true, false, nil)
 p(function() end)
-p(function() end, function() end)
-p(coroutine.create(function() end))
 p(io.stderr)
-p(1, nil, 2, nil)
+p(10000, math.pi)
+p(0/0, -1/0, 1/0)
+
+local test = function () end
+p(function() end, test)
+
+local co = coroutine.create(function() end)
+p(co)
+
+if box then
+  p(box.NULL)
+end
+
 
 --
 -- Change prefix test
@@ -21,6 +29,7 @@ p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
 p('Wow! It\'s new prefix!')
 p:resetPrefix()
 
+
 --
 -- Disable color test
 --
@@ -28,12 +37,14 @@ p:disableColor()
 p('String without colors')
 p:enableColor()
 
+
 --
 -- Disable test
 --
 p:disable()
 p('Hello?')
 p:enable()
+
 
 --
 -- Inspect Functions
@@ -70,6 +81,13 @@ local function func(arg1, ...)
 end
 func(1, '2', {})
 
+local function funcVararg(...)
+  p()
+  return
+end
+funcVararg()
+
+
 --
 -- Inspect Tables
 --
@@ -98,6 +116,7 @@ local t = {
 t.recursive = t
 
 p(t)
+
 
 --
 -- NOT SUPPORT

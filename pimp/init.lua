@@ -1,9 +1,11 @@
 ---
 -- @module pimp
-local pp = require 'pimp.pretty-print'
-local type_constructor = require 'pimp.type_constructor'
-local color = require 'pimp.color'
-local tocolor = color.tocolor
+--
+-- Modules
+local write = require('pimp.write')
+local color = require('pimp.color')
+local constructor = require('pimp.constructor')
+local prettyPrint = require('pimp.pretty-print')
 
 local DEFAULT_PREFIX = 'p'
 local DEFAULT_PREFIX_SEP = '|> '
@@ -15,19 +17,23 @@ local pimp = {
   module_name = DEFAULT_MODULE_NAME,
   output = true,
   full_path = true,
-  short_output = false,
   match_path = '',
   colors = true,
 }
 
 --
-local function write(...)
-  io.write(..., '\n')
-  io.flush()
-end
+local function findArgName(addr, __type)
+  -- DEBUG
+  if not (
+      __type == 'function' or
+      __type == 'thread'   or
+      __type == 'table'    or
+      __type == 'userdata'
+    )
+  then
+    return nil
+  end
 
---
-local function find_name_by_addr(addr)
   for i = 1, math.huge do
     local name, value = debug.getlocal(3, i)
     if not name and not value then
@@ -48,102 +54,6 @@ local function find_name_by_addr(addr)
   return nil
 end
 
---
-local function char_count(str, char)
-  local count = 0
-  for i = 1, #str do
-    if char == str:sub(i, i) then
-      count = count + 1
-    end
-  end
-
-  return count
-end
-
---- Find the arguments passed to the function
--- @local
--- @param filepath string The path to the file
--- @param call_line number The line number of the function call
--- @return string The found arguments
-local stack_find_call = {}
-local function find_call(filepath, call_line, curfunc)
-  local buff = ''
-  local i = 0
-  local call_line_non_modify = call_line
-
-  local open_brackets_count = 0 -- (
-  local close_brackets_count = 0 -- )
-
-  if not stack_find_call[filepath] then
-    stack_find_call[filepath] = {}
-    stack_find_call[filepath][call_line_non_modify] = {
-      filepath = filepath,
-      call_line = call_line_non_modify,
-      curfunc = curfunc,
-      buff = buff,
-      is_func = nil,
-    }
-  elseif not stack_find_call[filepath][call_line_non_modify] then
-    stack_find_call[filepath] = {}
-    stack_find_call[filepath][call_line_non_modify] = {
-      filepath = filepath,
-      call_line = call_line_non_modify,
-      curfunc = curfunc,
-      buff = buff,
-      is_func = nil,
-    }
-  elseif stack_find_call[filepath][call_line_non_modify] then
-    local current = stack_find_call[filepath][call_line_non_modify]
-    if curfunc then
-      return current.buff:match(curfunc..'%((.+)%)'), true
-    end
-
-    return current.buff, current.is_func
-  end
-
-  for line in io.lines(filepath) do
-    i = i + 1
-    -- Start capture
-    if i == call_line then
-      buff = buff .. line
-
-      open_brackets_count = open_brackets_count + char_count(line, '(')
-      close_brackets_count = close_brackets_count + char_count(line, ')')
-
-      if open_brackets_count == close_brackets_count then
-        break
-      end
-
-      call_line = call_line + 1
-    end
-  end
-
-  -- Remove spaces
-  buff = buff:gsub('  ', '')
-
-  if curfunc then
-    return buff:match(curfunc..'%((.+)%)'), true
-  end
-
-  -- Capture function and format buffer
-  buff = buff:match('.*('..pimp.module_name..'%(.+%))')
-  if buff then
-    buff = buff:match('%b()')
-    buff = buff:match('^%((.-)%)$')
-  end
-
-  -- Add to stack
-  local current = stack_find_call[filepath][call_line_non_modify]
-  current.buff = buff
-  if buff then
-    current.is_func = buff:match('.+%(.*%)') ~= nil
-  else
-    current.is_func = false
-  end
-
-  return buff, current.is_func
-end
-
 ---
 -- Output debugging information
 -- @param ... any Arguments to be printed
@@ -153,59 +63,66 @@ function pimp:debug(...)
     return ...
   end
 
-  local args = {...}
-  local args_count = select('#', ...)
+  local argsCount = select('#', ...)
   local prefix = self.prefix .. self.prefix_sep
 
-  -- Get information about the calling location
-  local info = debug.getinfo(2)
-
-  -- Interactive mode
-  if info.source == '=stdin' or info.source == '=[C]' then
-    pp(...)
-    return ...
-  end
+  -- Get full information about the calling location
+  local level = 2
+  local info = debug.getinfo(level)
+  -- write(prettyPrint(info))
 
   local infunc = ''
   if info.namewhat ~= '' then
+    local funcName = info.name
+    local funcArgs = ''
+
     if info.linedefined > 0 then
-      local func_args = ''
       if info.nparams > 0 then
-        -- Get local func vars
+        -- Get local func args
         for i = 1, info.nparams do
           local name, value = debug.getlocal(2, i)
           if not name and not value then
             break
           end
 
-          value = tostring(value)
-
-          if value:len() > 25 then
-            value = value:gsub('[\r\n\t]', '')
-            value = '[string ' .. value:len()..']'
+          local __type = type(value)
+          local __mt = getmetatable(value)
+          if __mt and __mt.__tostring then
+            __type = 'string'
           end
 
-          func_args = func_args .. name..': '..value
+          if __type == 'string' then
+            value = tostring(value)
+            value = '[len ' .. value:len()..']'
+          else
+            value = tostring(value)
+          end
+
+          funcArgs = funcArgs .. name..': '..value
           if i ~= info.nparams then
-           func_args = func_args .. ', '
+           funcArgs = funcArgs .. ', '
           end
         end
 
-        info.name = info.name .. '('..func_args
+        funcName = funcName .. '('..funcArgs
 
         if info.isvararg then
-          info.name = info.name .. ', ...'
+          funcName = funcName .. ', ...'
         end
 
-        info.name = info.name ..')'
+        funcName = funcName ..')'
       else
-        info.name = info.name .. '(?)'
+        if info.isvararg then
+          funcName = funcName .. '(...)'
+        else
+          funcName = funcName .. '(?)'
+        end
       end
     else
-      info.name = info.name .. '(?)'
+      funcName = funcName .. '(?)'
     end
 
-    infunc = infunc ..' in '..tocolor(info.name, 'custom_func')..':'
+    infunc = infunc ..'in '..color(color.brightMagenta, funcName)..': '
   end
 
   local linepos = info.currentline
@@ -221,86 +138,35 @@ function pimp:debug(...)
     end
   end
 
-  local filepath = info.source:match('@(.+)')
+  -- local filepath = info.source:match('@(.+)')
   local callpos = filename .. ':' .. linepos
 
-  -- No arguments were passed
-  if args_count == 0 and info.isvararg == false then
-    write(prefix .. callpos .. infunc .. type_constructor())
-
-    return ...
-  end
-
-  -- Handling the 'C' type (for C functions)
-  if info.what == 'C' then
-    write(prefix .. table.concat(args, ', '))
-
-    return ...
-  end
-
-  -- Find the function call
-  local callname, is_func = find_call(filepath, linepos)
-  local raw_callname = callname
-
-  local is_print_args = true
-
+  -- Parse
   local data = {}
-  for i = 1, args_count do
-    local arg = select(i, ...)
-    local arg_type = type(arg)
+  for i = 1, argsCount do
+    local value = select(i, ...)
+    local argType = type(value)
+    local argName = findArgName(value, argType)
+    local funcArgs = nil
 
-    -- Handle table type
-    if arg_type == 'table' then
-      local label_type = ''
-      table.insert(data, pp:wrap(arg)..label_type)
+    local obj, isTable = constructor(argType, value, argName, funcArgs)
 
-      if args_count == 1 then
-        if callname and callname:find('{.+}') then
-          is_print_args = false
-        end
-      end
-
-    elseif arg_type == 'function' or
-           arg_type == 'thread'
-    then
-      callname = find_name_by_addr(arg) or callname
-      local res = type_constructor(arg)
-      table.insert(data, res)
-    else
-      is_print_args = false
-      local res = type_constructor(arg)
-      table.insert(data, res)
+    if isTable then
+      table.insert(data, obj:compile()..prettyPrint(value))
+      break
     end
+
+    table.insert(data, obj:compile())
   end
 
-  local fmt_str = ''
-  if is_func then
-    fmt_str = '%s%s: %s return %s'
-    raw_callname = tocolor(raw_callname, 'custom_func')
+  local result = table.concat(data, ', ')
 
-    write(
-      fmt_str:format(prefix, callpos, raw_callname, table.concat(data, ', '))
-    )
-
-    return ...
-  end
-
-  local name = ''
+  local delimiter = ' '
   if infunc == '' then
-    if callname and is_print_args then
-      name = ' ' .. callname
-    end
-
-    fmt_str = '%s%s: %s'
-  else
-    fmt_str = '%s%s %s'
+    delimiter = ': '
   end
 
-  if self.short_output then
-    write(fmt_str:format(prefix, callpos, table.concat(data, ', ')))
-  else
-    write(fmt_str:format(prefix, callpos..infunc..name, table.concat(data, ', ')))
-  end
+  write(prefix..callpos..delimiter..infunc..result)
 
   return ...
 end
@@ -332,15 +198,6 @@ function pimp:enable()
   self.output = true
 end
 
---- Disable/Enable short output
-function pimp:short(val)
-  if val ~= nil then
-    self.short_output = val and true or false
-  else
-    self.short_output = not self.short_output
-  end
-end
-
 --- Matching path
 function pimp:matchPath(str)
   self.match_path = tostring(str)
@@ -359,13 +216,13 @@ end
 --- Disable colour output
 function pimp:disableColor()
   self.colors = false
-  color.setUseColors(false)
+  color:colorise(false)
 end
 
 --- Enable colour output
 function pimp:enableColor()
   self.colors = true
-  color.setUseColors(true)
+  color:colorise(true)
 end
 
 ---

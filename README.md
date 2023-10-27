@@ -16,27 +16,38 @@ p("This is a debugging message", 42, { key = "value" }, true)
 
 **Inspect Variables**
 ```lua
-p('Hello, World!')
-p(10000, math.pi)
-p(true, false)
-p(0/0, -1/0, 1/0)
+p('Pimp Module!')
+p(true, false, nil)
 p(function() end)
-p(coroutine.create(function() end))
 p(io.stderr)
+p(10000, math.pi)
+p(0/0, -1/0, 1/0)
+
+local test = function () end
+p(function() end, test)
+
+local co = coroutine.create(function() end)
+p(co)
+
+if box then
+  p(box.NULL)
+end
 ```
 ```
-p|> test.lua:1: 'Hello, World!': [length 13]
-p|> test.lua:2: 10000: [number], 3.1415926535898: [number]
-p|> test.lua:3: true: [boolean], false: [boolean]
-p|> test.lua:4: nan: [number], -inf: [number], inf: [number]
-p|> test.lua:5: function() end return: function: 0x7f306c7f9a18
-p|> test.lua:6: coroutine.create(function() end) return: thread: 0x7f306c800ec0
-p|> test.lua:6: file (0x7f306c73d4e0): [userdata]
+p|> file.lua:7: 'Pimp Module!': [len 12]
+p|> file.lua:8: true: [boolean], false: [boolean], nil
+p|> file.lua:9: <function: 0x402899e8>
+p|> file.lua:10: <file (0x7f14da5f74e0)>: [userdata]
+p|> file.lua:11: 10000: [number], 3.1415926535898: [number]
+p|> file.lua:12: nan: [number], -inf: [number], inf: [number]
+p|> file.lua:15: <function: 0x41d7a090>, test = <function: 0x411c7b70>
+p|> file.lua:18: co = <thread: 0x411f8a30>
+p|> file.lua:21: <cdata<void *>: NULL>: [cdata]
 ```
 
 **Inspect Tables**
 ```lua
-local t = {
+local table_name = {
   name = "John",
   age = 30,
   city = "New York"
@@ -45,7 +56,7 @@ local t = {
 p(t)
 ```
 ```
-p|> test.lua:1: {
+p|> test.lua:1: table_name = {
   age = 30: [number],
   name = 'John': [length 4],
   city = 'New York': [length 8],
@@ -63,7 +74,7 @@ local result_sum = p(sum(10, 5))
 ```
 ```
 p|> file.lua:5 in sum(a: 10, b: 5) 10: [number], 5: [number]
-p|> file.lua:6: sum(10, 5) return: 15: [number]
+p|> file.lua:6: 15: [number]
 ```
 
 **Disable or Enable output**
@@ -87,12 +98,5 @@ p:resetPrefix()
 ```
 INFO|-> file.lua:2: 'Wow! It's new preffix!': [length 22]
 ```
-
-**Limitations**
-*Avoid lines like:*
-```lua
-my_func( p(param_1), p(param_2), p(param_3) )
-```
-This is because the result of the capture will be param_3. Since the Lua debug module only reports the line number where the function was called and does not provide the function's position.
 
 *See test.lua for more examples

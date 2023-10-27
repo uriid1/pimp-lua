@@ -1,76 +1,80 @@
----
--- Color Scheme for Text Formatting
---
-local colors = true
+local color = {
+  use_color = true,
 
-local scheme = {
-  ["reset"] = "\27[0m",
+  reset ="\27[0m",
 
-  ["field"] = '\27[36m',
-  ["cycle"] = '\27[0;35m',
-  ["error"] = '\27[0;91m',
-  ["address"] = '\27[0;90m',
-  ["table_addr"] = "\27[0;35m",
-  ["custom_func"] = "\27[0;34m",
-  ["tab_char"] = "\27[38;5;233m",
+  black = "\27[38;5;0m",
+  red = "\27[38;5;1m",
+  green = "\27[38;5;2m",
+  yellow = "\27[38;5;3m",
+  blue = "\27[38;5;4m",
+  magenta = "\27[38;5;5m",
+  cyan = "\27[38;5;6m",
+  orange = "\27[38;5;208m",
+  purple = "\27[38;5;165m",
+  gray = "\27[38;5;232m",
+  white = "\27[38;5;7m",
+  gold = "\27[38;5;220m",
 
-  ["string"] = "\27[0;93m",
-  ["number"] = "\27[38;5;208m",
-  ["boolean"] = "\27[38;5;220m",
-  ["table"] = "\27[0;37m",
-  ["function"] = "\27[0;35m",
-  ["thread"] = "\27[0;35m",
-  ["userdata"] = "\27[0;36m",
-  ["cdata"] = "\27[0;35m",
-  ["nil"] = "\27[0;35m",
+  lightGreen = "\27[38;5;85m",
+  lightYellow = "\27[38;5;226m",
+
+  brightBlack = "\27[38;5;8m",
+  brightRed = "\27[38;5;9m",
+  brightGreen = "\27[38;5;10m",
+  brightYellow = "\27[38;5;11m",
+  brightBlue = "\27[38;5;12m",
+  brightMagenta = "\27[38;5;13m",
+  brightCyan = "\27[38;5;14m",
+  brightOrange = "\27[38;5;202m",
+  brightWhite = "\27[38;5;15m",
+
+  darkRed = "\27[38;5;124m",
+  darkGreen = "\27[38;5;28m",
+  darkYellow = "\27[38;5;58m",
+  darkBlue = "\27[38;5;19m",
+  darkMagenta = "\27[38;5;127m",
+  darkCyan = "\27[38;5;31m",
+  darkWhite = "\27[38;5;15m",
 }
 
---- Format a value with color according to its type.
--- @param val any The value to be formatted.
--- @param type string The type of the value (optional, default is 'string').
--- @return string The formatted value with color codes.
-local function tocolor(val, type)
-  type = type or 'string'
-  val = tostring(val)
+color.scheme = {
+  Boolean = color.brightMagenta,
+  Cdata = color.brightBlue,
+  Function = color.brightRed,
+  Nil = color.red,
+  Number = color.lightGreen,
+  String = color.gold,
+  Table = color.white,
+  Thread = color.brightBlue,
+  Userdata = color.brightBlue,
+  Unknown = color.red,
 
-  if type == 'string' then
-    val = '\'' .. val .. '\''
-  else
-    if type == 'table_addr' or
-       type == 'function' or
-       type == 'thread' or
-       type == 'cdata' or
-       type == 'userdata'
-    then
-      val = '<' .. val .. '>'
-    end
-  end
+  cycleTable = color.red,
+  address = color.red,
+  debugAddress = color.lightYellow,
 
-  if colors == false then
-    return val
-  end
+  tableBrackets = color.whiite,
+  emtyTable = color.white,
+  tableField = color.yellow,
 
-  if not scheme[type] then
-    return scheme['nil'] .. val .. scheme.reset
-  end
-
-  return scheme[type] .. val .. scheme.reset
-end
-
---- Enable or disable colors
--- @param val boolean
-local function setUseColors(val)
-  colors = val and true or false
-end
-
---- Module for Text Color Formatting.
--- @table color
--- @field scheme Table The color scheme used for formatting.
--- @field tocolor Function to format text with color.
--- @field setUseColors Function to set use or unuse color sheme.
-
-return {
-  scheme = scheme,
-  tocolor = tocolor,
-  setUseColors = setUseColors,
+  error = color.red,
 }
+
+function color:colorise(value)
+  self.use_color = value and true or false
+end
+
+function color:tocolor(color_type, value)
+  color_type = color_type or self.white
+
+  if self.use_color == false then
+    return tostring(value)
+  end
+
+  return color_type..tostring(value)..color.reset
+end
+
+setmetatable(color, { __call = color.tocolor })
+
+return color
