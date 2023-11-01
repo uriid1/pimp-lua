@@ -94,6 +94,13 @@ function pimp:debug(...)
           if __type == 'string' then
             value = tostring(value)
             value = '[len ' .. value:len()..']'
+          elseif
+            __type == 'table'    or
+            __type == 'userdata' or
+            __type == 'cdata'    or
+            __type == 'thread'
+          then
+            value = '['..__type..']'
           else
             value = tostring(value)
           end
