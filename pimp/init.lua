@@ -69,6 +69,8 @@ function pimp:debug(...)
   -- Get full information about the calling location
   local level = 2
   local info = debug.getinfo(level)
+
+  -- DEBUG
   -- write(prettyPrint(info))
 
   local infunc = ''
@@ -93,7 +95,7 @@ function pimp:debug(...)
 
           if __type == 'string' then
             value = tostring(value)
-            value = '[len ' .. value:len()..']'
+            value = '[' .. value:len()..' byte]'
           elseif
             __type == 'table'     or
             __type == 'metatable' or
