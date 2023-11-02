@@ -1,4 +1,4 @@
-local p = require '.pimp.init'
+local p = require 'pimp.init'
 -- p:disable() -- Disable debug output
 
 --
@@ -83,15 +83,32 @@ func(1, '2', {})
 
 local function funcVararg(...)
   p()
-  return
 end
 funcVararg()
 
+local function tt(t1, t2, t3)
+  p(t1, t2, t3)
+end
+
+local t1 = {}
+setmetatable(t1, { __add = function() end })
+
+local t2 = {1, 2, 3}
+setmetatable(t2, { __tostring = function() end })
+
+tt(t1, t2, {})
+
+--
+function test_1(a, ...) p(); return a, ... end
+function test_2(b, ...) p(); return b, ... end
+function test_3(c, ...) p(); return c, ... end
+
+test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
 
 --
 -- Inspect Tables
 --
-p({1, 2, 3})
+p({ [-99] = 'Array?' })
 
 local t = {
   message = {
@@ -116,13 +133,3 @@ local t = {
 t.recursive = t
 
 p(t)
-
-
---
--- NOT SUPPORT
---
-function test_1(a, ...) p(); return a, ... end
-function test_2(b, ...) p(); return b, ... end
-function test_3(c, ...) p(); return c, ... end
-
-test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))

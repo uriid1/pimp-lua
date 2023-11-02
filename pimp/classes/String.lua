@@ -25,7 +25,7 @@ function String:compile()
   end
 
   data = data..'\''..color(self.color, self.value)..'\''
-  data = data..': [len '..self.length..']'
+  data = data..': ['..self.length..' byte]'
 
   return data
 end

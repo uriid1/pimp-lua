@@ -11,29 +11,21 @@ local prettyPrint = {
 }
 
 --
-local merge
-function merge(t1, t2)
-  for k, v in pairs(t2) do
-    t1[k] = v
-  end
-end
-
---
 local function isArray(t)
   if type(t) ~= 'table' then
     return false
   end
 
-  local i = 1
-  for _ in next, t do
-    if t[i] == nil then
+  local count = 1
+  for index in next, t do
+    if type(index) ~= 'number' then
       return false, nil
     end
 
-    i = i + 1
+    count = count + 1
   end
 
-  return true, i-1
+  return true, count-1
 end
 
 --- Wrap an object for pretty printing
@@ -42,13 +34,15 @@ end
 -- @param seen table A table to keep track of visited objects (optional)
 -- @return string The pretty-printed string
 function prettyPrint:wrap(obj, indent, seen)
-  local objType = type(obj)
+  local __type = type(obj)
   indent = indent or 0
   seen = seen or {}
 
-  if objType == 'nil' then
+  if __type == 'nil' then
     return constructor('nil', obj):compile()
-  elseif objType == 'table' then
+  end
+
+  if __type == 'table' then
     -- Check if we've already seen this table
     if seen[obj] then
       local address = tostring(obj)
@@ -59,67 +53,51 @@ function prettyPrint:wrap(obj, indent, seen)
     end
     seen[obj] = true
 
-    if self.debug then
-      local __mt = getmetatable(obj)
-      if __mt then
-        merge(obj, __mt)
-      end
-    end
-
     -- Detect empty table
-    local is_empty = not next(obj)
-    if is_empty then
+    if not next(obj) then
       return color(color.scheme.emtyTable, '{}')
     end
 
-    local str = color(color.scheme.tableBrackets, '{\n')
+    local __result = color(color.scheme.tableBrackets, '{\n')
     for key, val in pairs(obj) do
-      local typeVal = type(val)
-
-      -- Detect array
-      local KeyIsArray = tonumber(key)
-
       -- Detect table
-      local valIsTable = typeVal == 'table'
+      local valIsTable = type(val) == 'table'
 
-      local fstr -- ident|value| debug| =
-      if KeyIsArray then
-        if self.debug and valIsTable then
-          fstr = '%s[%s] %s = '
-        else
-          fstr = '%s[%s] = '
-        end
-      else
-        if self.debug and valIsTable then
-          fstr = '%s%s %s = '
-        else
-          fstr = '%s%s = '
-        end
-      end
+      -- Detect if key is number
+      local __field_type = tonumber(key) and '[%s]' or '%s'
+
+      -- Field color
+      local fieldColor = color.scheme.tableField
 
       if self.debug and valIsTable then
-        local address = tostring(val):match('table: (.+)')
-        str = str .. fstr:format(
-          string.rep(self.tab_char, indent + 2),
-          color(color.scheme.tableField, key),
-          color(color.scheme.debugAddress, address)
-        )
+        local fmt_str = '%s'..__field_type..' %s = '
+        local address = tostring(val):match('^table: (.+)$')
+
+        __result = __result
+          .. fmt_str:format(
+              string.rep(self.tab_char, indent + 2),    -- Space
+              color(fieldColor, key),                   -- Field name
+              color(color.scheme.debugAddress, address) -- Table address
+            )
       else
-        str = str .. fstr:format(
-          string.rep(self.tab_char, indent + 2),
-          color(color.scheme.tableField, key)
-        )
+        local fmt_str = '%s'..__field_type..' = '
+
+        __result = __result
+          .. fmt_str:format(
+              string.rep(self.tab_char, indent + 2), -- Space
+              color(fieldColor, key)                 -- Field name
+            )
       end
 
-      local success, result = pcall(function()
+      local success, error = pcall(function()
         return self:wrap(val, indent + 2, seen)
       end)
 
       if not success then
-        result = '<'..color(color.scheme.error, 'error: '..tostring(result))..'>'
+        error = '<'..color(color.scheme.error, 'error: '..tostring(error))..'>'
       end
 
-      str = str .. result .. ',\n'
+      __result = __result .. error .. ',\n'
     end
 
     local labelType = ''
@@ -129,14 +107,19 @@ function prettyPrint:wrap(obj, indent, seen)
       labelType = labelType .. ': [array '..arrCount..']'
     end
 
-    str = str..string.rep(self.tab_char, indent)..color(color.scheme.tableBrackets, '}')..labelType
+    __result = __result
+      .. string.rep(self.tab_char, indent)
+      .. color(color.scheme.tableBrackets, '}')
+      .. labelType
 
-    return str
-  else
-    return constructor(objType, obj):compile()
+    return __result
   end
+
+  return constructor(__type, obj):compile()
 end
 
-setmetatable(prettyPrint, { __call = prettyPrint.wrap })
+setmetatable(prettyPrint, {
+  __call = prettyPrint.wrap,
+})
 
 return prettyPrint

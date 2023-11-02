@@ -87,17 +87,18 @@ function pimp:debug(...)
 
           local __type = type(value)
           local __mt = getmetatable(value)
-          if __mt and __mt.__tostring then
-            __type = 'string'
+          if __mt  then
+            __type = 'metatable'
           end
 
           if __type == 'string' then
             value = tostring(value)
             value = '[len ' .. value:len()..']'
           elseif
-            __type == 'table'    or
-            __type == 'userdata' or
-            __type == 'cdata'    or
+            __type == 'table'     or
+            __type == 'metatable' or
+            __type == 'userdata'  or
+            __type == 'cdata'     or
             __type == 'thread'
           then
             value = '['..__type..']'
@@ -156,14 +157,19 @@ function pimp:debug(...)
     local argName = findArgName(value, argType)
     local funcArgs = nil
 
-    local obj, isTable = constructor(argType, value, argName, funcArgs)
+    local obj = constructor(argType, value, argName, funcArgs)
 
-    if isTable then
-      table.insert(data, obj:compile()..prettyPrint(value))
-      break
+    if argType == 'table' then
+      local __mt_label = ''
+      local __mt = getmetatable(value)
+      if __mt then
+        __mt_label = ': ['..color(color.scheme.metatable, 'metatable')..']'
+      end
+
+      table.insert(data, obj:compile()..prettyPrint(value)..__mt_label)
+    else
+      table.insert(data, obj:compile())
     end
-
-    table.insert(data, obj:compile())
   end
 
   local result = table.concat(data, ', ')

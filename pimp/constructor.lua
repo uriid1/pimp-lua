@@ -42,7 +42,7 @@ local function constructor(argType, value, argName, funcArgs)
     obj = Unknown(argName)
   end
 
-  return obj, argType == 'table'
+  return obj
 end
 
 return constructor
