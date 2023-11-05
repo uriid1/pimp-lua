@@ -22,6 +22,7 @@ local pimp = {
 }
 
 --
+local seen_arg = {}
 local function findArgName(addr, __type)
   -- DEBUG
   if not (
@@ -34,6 +35,10 @@ local function findArgName(addr, __type)
     return nil
   end
 
+  if seen_arg[addr] then
+    return seen_arg[addr]
+  end
+
   for i = 1, math.huge do
     local name, value = debug.getlocal(3, i)
     if not name and not value then
@@ -41,13 +46,15 @@ local function findArgName(addr, __type)
     end
 
     if value == addr then
+      seen_arg[addr] = name
       return name
     end
   end
 
-  for k, v in pairs(_G) do
-    if v == addr then
-      return k
+  for name, value in pairs(_G) do
+    if value == addr then
+      seen_arg[addr] = name
+      return name
     end
   end
 
@@ -89,7 +96,7 @@ function pimp:debug(...)
 
           local __type = type(value)
           local __mt = getmetatable(value)
-          if __mt  then
+          if __mt then
             __type = 'metatable'
           end
 
@@ -195,49 +202,67 @@ function pimp:setPrefix(param)
   if param.sep then
     self.prefix_sep = tostring(param.sep)
   end
+
+  return self
 end
 
 --- Reset prefix
 function pimp:resetPrefix()
   self.prefix = DEFAULT_PREFIX
   self.prefix_sep = DEFAULT_PREFIX_SEP
+
+  return self
 end
 
 --- Enable debug output
 function pimp:disable()
   self.output = false
+
+  return self
 end
 
 --- Disable debug output
 function pimp:enable()
   self.output = true
+
+  return self
 end
 
 --- Matching path
 function pimp:matchPath(str)
   self.match_path = tostring(str)
+
+  return self
 end
 
 --- Disable full path output
 function pimp:disableFullPath()
   self.full_path = false
+
+  return self
 end
 
 --- Enable full path output
 function pimp:enableFullPath()
   self.full_path = true
+
+  return self
 end
 
 --- Disable colour output
 function pimp:disableColor()
   self.colors = false
   color:colorise(false)
+
+  return self
 end
 
 --- Enable colour output
 function pimp:enableColor()
   self.colors = true
   color:colorise(true)
+
+  return self
 end
 
 ---
