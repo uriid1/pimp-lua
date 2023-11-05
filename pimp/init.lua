@@ -8,7 +8,7 @@ local constructor = require('pimp.constructor')
 local prettyPrint = require('pimp.pretty-print')
 
 local DEFAULT_PREFIX = 'p'
-local DEFAULT_PREFIX_SEP = '|> '
+local DEFAULT_PREFIX_SEP = '| '
 local DEFAULT_MODULE_NAME = 'p'
 
 local pimp = {
@@ -16,14 +16,40 @@ local pimp = {
   prefix_sep = DEFAULT_PREFIX_SEP,
   module_name = DEFAULT_MODULE_NAME,
   output = true,
-  full_path = true,
-  match_path = '',
   colors = true,
+  full_path = true,
+  show_visibility = true,
+  match_path = '',
 }
 
 --
-local seen_arg = {}
-local function findArgName(addr, __type)
+local seenArg = {}
+local function seenAdd(addr, linepos, name)
+  if seenArg[addr] then
+    seenArg[addr][linepos] = name
+    return name
+  end
+
+  seenArg[addr] = {}
+  seenArg[addr][linepos] = name
+
+  -- debug
+  -- write(prettyPrint(seenArg))
+
+  return name
+end
+
+local function seenExists(addr, linepos)
+  if seenArg[addr] and seenArg[addr][linepos] then
+    return true
+  end
+
+  return false
+end
+
+-- return[1] name string
+-- return[2] isLocal boolean
+local function findArgName(addr, __type, linepos)
   -- DEBUG
   if not (
       __type == 'function' or
@@ -32,13 +58,14 @@ local function findArgName(addr, __type)
       __type == 'userdata'
     )
   then
-    return nil
+    return nil, nil
   end
 
-  if seen_arg[addr] then
-    return seen_arg[addr]
+  if seenExists(addr, linepos) then
+    return seenArg[addr][linepos]
   end
 
+  -- Find local name by addr
   for i = 1, math.huge do
     local name, value = debug.getlocal(3, i)
     if not name and not value then
@@ -46,19 +73,18 @@ local function findArgName(addr, __type)
     end
 
     if value == addr then
-      seen_arg[addr] = name
-      return name
+      return seenAdd(addr, linepos, name), true
     end
   end
 
+  -- Find global name by addr
   for name, value in pairs(_G) do
     if value == addr then
-      seen_arg[addr] = name
-      return name
+      return seenAdd(addr, linepos, name), false
     end
   end
 
-  return nil
+  return nil, nil
 end
 
 ---
@@ -77,13 +103,20 @@ function pimp:debug(...)
   local level = 2
   local info = debug.getinfo(level)
 
-  -- DEBUG
+  -- debug
   -- write(prettyPrint(info))
 
   local infunc = ''
   if info.namewhat ~= '' then
     local funcName = info.name
     local funcArgs = ''
+    local visibilityLabel = ''
+
+    if info.namewhat == 'local' or
+      info.namewhat == 'global'
+    then
+        visibilityLabel = info.namewhat..' '
+    end
 
     if info.linedefined > 0 then
       if info.nparams > 0 then
@@ -139,7 +172,9 @@ function pimp:debug(...)
       funcName = funcName .. '(?)'
     end
 
-    infunc = infunc ..'in '..color(color.brightMagenta, funcName)..': '
+    infunc = infunc
+      ..'in '..color(color.scheme.visibility, visibilityLabel)
+      ..color(color.brightMagenta, funcName)..': '
   end
 
   local linepos = info.currentline
@@ -163,10 +198,16 @@ function pimp:debug(...)
   for i = 1, argsCount do
     local value = select(i, ...)
     local argType = type(value)
-    local argName = findArgName(value, argType)
+    local argName, isLocal = findArgName(value, argType, linepos)
     local funcArgs = nil
 
     local obj = constructor(argType, value, argName, funcArgs)
+
+    local visibilityLabel = ''
+    if self.show_visibility and isLocal ~= nil then
+      visibilityLabel = isLocal and 'local ' or 'global '
+      visibilityLabel = color(color.scheme.visibility, visibilityLabel)
+    end
 
     if argType == 'table' then
       local __mt_label = ''
@@ -175,9 +216,9 @@ function pimp:debug(...)
         __mt_label = ': ['..color(color.scheme.metatable, 'metatable')..']'
       end
 
-      table.insert(data, obj:compile()..prettyPrint(value)..__mt_label)
+      table.insert(data, visibilityLabel..obj:compile()..prettyPrint(value)..__mt_label)
     else
-      table.insert(data, obj:compile())
+      table.insert(data, visibilityLabel..obj:compile())
     end
   end
 

@@ -59,7 +59,7 @@ p(
   })
 )
 
-local function mv(a, b, c)
+function mv(a, b, c)
   p('Message from local func')
   return a, b, c
 end
@@ -108,9 +108,10 @@ test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
 --
 -- Inspect Tables
 --
-p({ [-99] = 'Array?' })
+arrTest = { [-99] = 'Array?' }
+p(arrTest)
 
-local t = {
+local table_name = {
   message = {
     chat = {
       title = 'Кто съел мороженое?',
@@ -130,6 +131,6 @@ local t = {
   empty_table = {},
   NULL = box and box.NULL or ':)'
 }
-t.recursive = t
+table_name.recursive = table_name
 
-p(t)
+p(table_name)

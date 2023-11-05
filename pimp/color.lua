@@ -50,7 +50,7 @@ color.scheme = {
   Userdata = color.brightBlue,
   Unknown = color.red,
 
-  metatable = color.blue,
+  metatable = color.brightCyan,
   cycleTable = color.red,
   address = color.red,
   debugAddress = color.lightYellow,
@@ -58,6 +58,8 @@ color.scheme = {
   tableBrackets = color.whiite,
   emtyTable = color.white,
   tableField = color.yellow,
+
+  visibility = color.blue,
 
   error = color.red,
 }
