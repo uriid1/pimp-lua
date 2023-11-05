@@ -112,10 +112,12 @@ function pimp:debug(...)
     local funcArgs = ''
     local visibilityLabel = ''
 
-    if info.namewhat == 'local' or
-      info.namewhat == 'global'
-    then
-        visibilityLabel = info.namewhat..' '
+    if self.show_visibility then
+      if info.namewhat == 'local' or
+        info.namewhat == 'global'
+      then
+          visibilityLabel = info.namewhat..' '
+      end
     end
 
     if info.linedefined > 0 then
@@ -204,9 +206,11 @@ function pimp:debug(...)
     local obj = constructor(argType, value, argName, funcArgs)
 
     local visibilityLabel = ''
-    if self.show_visibility and isLocal ~= nil then
-      visibilityLabel = isLocal and 'local ' or 'global '
-      visibilityLabel = color(color.scheme.visibility, visibilityLabel)
+    if self.show_visibility then
+      if isLocal ~= nil then
+        visibilityLabel = isLocal and 'local ' or 'global '
+        visibilityLabel = color(color.scheme.visibility, visibilityLabel)
+      end
     end
 
     if argType == 'table' then
@@ -302,6 +306,20 @@ end
 function pimp:enableColor()
   self.colors = true
   color:colorise(true)
+
+  return self
+end
+
+--- Enable Visibility
+function pimp:enableVisibility()
+  self.show_visibility = true
+
+  return self
+end
+
+--- Disable Visibility
+function pimp:disableVisibility()
+  self.show_visibility = false
 
   return self
 end

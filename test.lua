@@ -87,7 +87,9 @@ end
 funcVararg()
 
 local function tt(t1, t2, t3)
+  p:disableVisibility()
   p(t1, t2, t3)
+  p:enableVisibility()
 end
 
 local t1 = {}
