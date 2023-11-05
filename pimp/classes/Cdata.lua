@@ -8,6 +8,7 @@ function Cdata:new(varname, value)
   obj.type = 'cdata'
   obj.varname = varname
   obj.value = value
+  obj.showType = true
   obj.colorise = true
 
   -- Detect CDATA NULL
@@ -30,9 +31,18 @@ function Cdata:compile()
 
   local value = tostring(self.value)
   data = data..'<'..color(self.color, value)..'>'
-  data = data..': ['..self.type..']'
+
+  if self.showType then
+    data = data..': ['..self.type..']'
+  end
 
   return data
+end
+
+function Cdata:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Cdata, { __call = Cdata.new })

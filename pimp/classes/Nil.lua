@@ -8,6 +8,7 @@ function Nil:new(varname)
   obj.type = 'nil'
   obj.value = 'nil'
   obj.varname = varname
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Nil
 
@@ -25,6 +26,12 @@ function Nil:compile()
   data = data..color(self.color, self.value)
 
   return data
+end
+
+function Nil:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Nil, { __call = Nil.new })

@@ -10,6 +10,7 @@ function String:new(varname, value)
   obj.varname = varname
   obj.value = stringFormat(value)
   obj.length = #value
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.String
 
@@ -25,9 +26,18 @@ function String:compile()
   end
 
   data = data..'\''..color(self.color, self.value)..'\''
-  data = data..': ['..self.length..' byte]'
+
+  if self.showType then
+    data = data..': ['..self.length..' byte]'
+  end
 
   return data
+end
+
+function String:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(String, { __call = String.new })

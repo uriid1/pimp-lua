@@ -8,6 +8,7 @@ function Number:new(varname, value)
   obj.type = 'number'
   obj.varname = varname
   obj.value = value
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Number
 
@@ -23,9 +24,18 @@ function Number:compile()
   end
 
   data = data..color(self.color, self.value)
-  data = data..': ['..self.type..']'
+
+  if self.showType then
+    data = data..': ['..self.type..']'
+  end
 
   return data
+end
+
+function Number:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Number, { __call = Number.new })

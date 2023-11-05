@@ -9,6 +9,7 @@ function Function:new(varname, value, args)
   obj.varname = varname
   obj.args = args
   obj.value = value
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Function
 
@@ -26,6 +27,12 @@ function Function:compile()
   data = data..'<'..color(self.color, self.value)..'>'
 
   return data
+end
+
+function Function:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Function, { __call = Function.new })

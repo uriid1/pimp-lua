@@ -8,6 +8,7 @@ function Boolean:new(varname, value)
   obj.type = 'boolean'
   obj.varname = varname
   obj.value = value
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Boolean
 
@@ -23,9 +24,18 @@ function Boolean:compile()
   end
 
   data = data..color(self.color, self.value)
-  data = data..': ['..self.type..']'
+
+  if self.showType then
+    data = data..': ['..self.type..']'
+  end
 
   return data
+end
+
+function Boolean:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Boolean, { __call = Boolean.new })

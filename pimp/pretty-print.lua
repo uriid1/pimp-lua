@@ -6,8 +6,9 @@ local color = require 'pimp.color'
 local constructor = require 'pimp.constructor'
 
 local prettyPrint = {
-  debug = false,
   tab_char = ' ',
+  show_type = true,
+  show_table_addr = false,
 }
 
 local metamethods = {
@@ -76,7 +77,9 @@ function prettyPrint:wrap(obj, indent, seen)
   seen = seen or {}
 
   if __type == 'nil' then
-    return constructor('nil', obj):compile()
+    return constructor('nil', obj)
+           :setShowType(self.show_type)
+           :compile()
   end
 
   if __type == 'table' then
@@ -110,7 +113,7 @@ function prettyPrint:wrap(obj, indent, seen)
         fieldColor = color.scheme.metatable
       end
 
-      if self.debug and valIsTable then
+      if self.show_table_addr and valIsTable then
         local fmt_str = '%s'..__field_type..' %s = '
         local address = tostring(val):match('^table: (.+)$')
 
@@ -144,7 +147,7 @@ function prettyPrint:wrap(obj, indent, seen)
     local labelType = ''
     local isArr, arrCount = isArray(obj)
 
-    if isArr then
+    if isArr and self.show_type then
       labelType = labelType .. ': [array '..arrCount..']'
     end
 
@@ -156,7 +159,21 @@ function prettyPrint:wrap(obj, indent, seen)
     return __result
   end
 
-  return constructor(__type, obj):compile()
+  return constructor(__type, obj)
+         :setShowType(self.show_type)
+         :compile()
+end
+
+function prettyPrint:setShowType(val)
+  self.show_type = val and true or false
+
+  return self
+end
+
+function prettyPrint:setShowTableAddr(val)
+  self.show_table_addr = val and true or false
+
+  return self
 end
 
 setmetatable(prettyPrint, {

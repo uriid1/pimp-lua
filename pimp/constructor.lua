@@ -13,7 +13,9 @@ local Cdata = require('pimp.classes.Cdata')
 local Nil = require('pimp.classes.Nil')
 local Unknown = require('pimp.classes.Unknown')
 
-local function constructor(argType, value, argName, funcArgs)
+local constructor = {}
+
+function constructor:new(argType, value, argName, funcArgs)
   -- Detect CDATA NULL
   if value and value == nil then
     argType = 'cdata'
@@ -44,5 +46,7 @@ local function constructor(argType, value, argName, funcArgs)
 
   return obj
 end
+
+setmetatable(constructor, { __call = constructor.new })
 
 return constructor

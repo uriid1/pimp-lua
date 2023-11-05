@@ -1,5 +1,8 @@
-local p = require 'pimp.init'
+local p = require('pimp.init')
 -- p:disable() -- Disable debug output
+:enableType() -- Enable show type
+:enableTableAddr() -- Enable show table address
+:enableVisibility() -- local / global
 
 --
 -- Inspect Variables

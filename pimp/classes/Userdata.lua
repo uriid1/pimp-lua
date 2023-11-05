@@ -8,6 +8,7 @@ function Userdata:new(varname, value)
   obj.type = 'userdata'
   obj.varname = varname
   obj.value = value
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Userdata
 
@@ -24,9 +25,18 @@ function Userdata:compile()
 
   local value = tostring(self.value)
   data = data..'<'..color(self.color, value)..'>'
-  data = data..': ['..self.type..']'
+
+  if self.showType then
+    data = data..': ['..self.type..']'
+  end
 
   return data
+end
+
+function Userdata:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Userdata, { __call = Userdata.new })

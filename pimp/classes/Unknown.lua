@@ -8,6 +8,7 @@ function Unknown:new(varname)
   obj.type = 'unknown'
   obj.value = 'unknown'
   obj.varname = varname
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Unknown
 
@@ -25,6 +26,12 @@ function Unknown:compile()
   data = data..color(self.color, self.value)
 
   return data
+end
+
+function Unknown:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Unknown, { __call = Unknown.new })

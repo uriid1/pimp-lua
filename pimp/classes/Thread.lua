@@ -8,6 +8,7 @@ function Thread:new(varname, value)
   obj.type = 'thread'
   obj.varname = varname
   obj.value = value
+  obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Thread
 
@@ -25,6 +26,12 @@ function Thread:compile()
   data = data..'<'..color(self.color, self.value)..'>'
 
   return data
+end
+
+function Thread:setShowType(val)
+  self.showType = val and true or false
+
+  return self
 end
 
 setmetatable(Thread, { __call = Thread.new })

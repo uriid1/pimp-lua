@@ -18,7 +18,9 @@ local pimp = {
   output = true,
   colors = true,
   full_path = true,
-  show_visibility = true,
+  show_visibility = false,
+  show_type = false,
+  show_table_addr = false,
   match_path = '',
 }
 
@@ -205,6 +207,8 @@ function pimp:debug(...)
 
     local obj = constructor(argType, value, argName, funcArgs)
 
+    obj:setShowType(self.show_type)
+
     local visibilityLabel = ''
     if self.show_visibility then
       if isLocal ~= nil then
@@ -216,9 +220,12 @@ function pimp:debug(...)
     if argType == 'table' then
       local __mt_label = ''
       local __mt = getmetatable(value)
-      if __mt then
+      if __mt and self.show_type then
         __mt_label = ': ['..color(color.scheme.metatable, 'metatable')..']'
       end
+
+      prettyPrint:setShowType(self.show_type)
+      prettyPrint:setShowTableAddr(self.show_table_addr)
 
       table.insert(data, visibilityLabel..obj:compile()..prettyPrint(value)..__mt_label)
     else
@@ -320,6 +327,34 @@ end
 --- Disable Visibility
 function pimp:disableVisibility()
   self.show_visibility = false
+
+  return self
+end
+
+--- Enable show type
+function pimp:enableType()
+  self.show_type = true
+
+  return self
+end
+
+--- Disable show type
+function pimp:disableType()
+  self.show_type = false
+
+  return self
+end
+
+--- Enable table address
+function pimp:enableTableAddr()
+  self.show_table_addr = true
+
+  return self
+end
+
+--- Disable table address
+function pimp:disableTableAddr()
+  self.show_table_addr = false
 
   return self
 end
