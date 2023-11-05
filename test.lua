@@ -91,12 +91,18 @@ local function tt(t1, t2, t3)
 end
 
 local t1 = {}
-setmetatable(t1, { __add = function() end })
+setmetatable(t1, {
+  __add = function() end,
+  __sub = function() end,
+  __mul = function() end,
+})
 
 local t2 = {1, 2, 3}
 setmetatable(t2, { __tostring = function() end })
 
 tt(t1, t2, {})
+
+p(getmetatable(t1))
 
 --
 function test_1(a, ...) p(); return a, ... end
