@@ -22,6 +22,9 @@ local pimp = {
   show_type = false,
   show_table_addr = false,
   match_path = '',
+
+  -- p color
+  color = color,
 }
 
 --

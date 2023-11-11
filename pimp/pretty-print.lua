@@ -2,50 +2,14 @@
 -- Table Printing Module
 -- @module pretty-print
 --
-local color = require 'pimp.color'
-local constructor = require 'pimp.constructor'
+local color = require('pimp.color')
+local constructor = require('pimp.constructor')
+local metamethods = require('pimp.enums.metamethods')
 
 local prettyPrint = {
   tab_char = ' ',
   show_type = true,
   show_table_addr = false,
-}
-
-local metamethods = {
-  ["__call"] = true,
-  ["__concat"] = true,
-  ["__tostring"] = true,
-  ["__metatable"] = true,
-  ["__mode"] = true,
-  ["__gc"] = true,
-
-  ["__index"] = true,
-  ["__newindex"] = true,
-
-  ["__add"] = true,
-  ["__sub"] = true,
-  ["__mul"] = true,
-  ["__div"] = true,
-  ["__pow"] = true,
-  ["__mod"] = true,
-  ["__unm"] = true,
-
-  ["__eq"] = true, -- ==
-  ["__lt"] = true, -- <
-  ["__lе"] = true, -- <=
-
-  ["__len"] = true,
-  ["__ipairs"] = true,
-
-  -- 5.3
-  ["__band"] = true, -- &
-  ["__bor"] = true, -- |
-  ["__bxor"] = true, -- ~
-  ["__bnot"] = true, -- ~
-  ["__shl"] = true, -- <<
-  ["__shr"] = true, -- >>
-
-  ["__idiv"] = true,
 }
 
 --
