@@ -53,13 +53,15 @@ color.scheme = {
   metatable = color.brightCyan,
   cycleTable = color.red,
   address = color.red,
-  debugAddress = color.lightYellow,
+  debugAddress = color.brightYellow,
 
   tableBrackets = color.whiite,
   emtyTable = color.white,
   tableField = color.yellow,
 
   visibility = color.blue,
+
+  controls = color.magenta,
 
   error = color.red,
 }

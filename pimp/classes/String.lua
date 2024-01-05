@@ -25,7 +25,7 @@ function String:compile()
     data = data..tostring(self.varname)..' = '
   end
 
-  data = data..'\''..color(self.color, self.value)..'\''
+  data = data..'"'..self.value..'"'
 
   if self.showType then
     data = data..': ['..self.length..' byte]'

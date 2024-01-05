@@ -27,6 +27,9 @@ local pimp = {
   color = color,
 }
 
+local function readLine(fileName, linePos)
+end
+
 --
 local seenArg = {}
 local function seenAdd(addr, linepos, name)
@@ -61,10 +64,24 @@ local function findArgName(addr, __type, linepos)
       __type == 'thread'   or
       __type == 'table'    or
       __type == 'userdata'
+
+      -- Testing
+      -- __type == 'string' or
+      -- __type == 'number' or
+      -- __type == 'cdata'
     )
   then
     return nil, nil
   end
+
+  -- -- Fix for tarantool
+  -- if __type == 'cdata' then
+  --   if box and box.NULL then
+  --     if addr ~= box.NULL then
+  --       return nil, nil
+  --     end
+  --   end
+  -- end
 
   if seenExists(addr, linepos) then
     return seenArg[addr][linepos]
@@ -102,7 +119,7 @@ function pimp:debug(...)
   end
 
   local argsCount = select('#', ...)
-  local prefix = self.prefix .. self.prefix_sep
+  local prefix = self.prefix..self.prefix_sep
 
   -- Get full information about the calling location
   local level = 2
@@ -142,7 +159,7 @@ function pimp:debug(...)
 
           if __type == 'string' then
             value = tostring(value)
-            value = '[' .. value:len()..' byte]'
+            value = '['..value:len()..' byte]'
           elseif
             __type == 'table'     or
             __type == 'metatable' or
@@ -155,28 +172,28 @@ function pimp:debug(...)
             value = tostring(value)
           end
 
-          funcArgs = funcArgs .. name..': '..value
+          funcArgs = funcArgs..name..': '..value
           if i ~= info.nparams then
-           funcArgs = funcArgs .. ', '
+           funcArgs = funcArgs..', '
           end
         end
 
-        funcName = funcName .. '('..funcArgs
+        funcName = funcName..'('..funcArgs
 
         if info.isvararg then
-          funcName = funcName .. ', ...'
+          funcName = funcName..', ...'
         end
 
-        funcName = funcName ..')'
+        funcName = funcName..')'
       else
         if info.isvararg then
-          funcName = funcName .. '(...)'
+          funcName = funcName..'(...)'
         else
-          funcName = funcName .. '(?)'
+          funcName = funcName..'(?)'
         end
       end
     else
-      funcName = funcName .. '(?)'
+      funcName = funcName..'(?)'
     end
 
     infunc = infunc
@@ -229,6 +246,7 @@ function pimp:debug(...)
 
       prettyPrint:setShowType(self.show_type)
       prettyPrint:setShowTableAddr(self.show_table_addr)
+      obj:setShowTableAddr(self.show_table_addr)
 
       table.insert(data, visibilityLabel..obj:compile()..prettyPrint(value)..__mt_label)
     else

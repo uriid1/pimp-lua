@@ -64,11 +64,20 @@ function prettyPrint:wrap(obj, indent, seen)
 
     local __result = color(color.scheme.tableBrackets, '{\n')
     for key, val in pairs(obj) do
+      local key_type = type(key)
+
       -- Detect table
       local valIsTable = type(val) == 'table'
 
       -- Detect if key is number
-      local __field_type = tonumber(key) and '[%s]' or '%s'
+      local __field_type
+      if key_type == 'string' and tonumber(key) then
+        __field_type = '["%s"]'
+      elseif key_type == 'number' then
+        __field_type = '[%s]'
+      else
+        __field_type = '%s'
+      end
 
       -- Field color
       local fieldColor = color.scheme.tableField
@@ -78,14 +87,15 @@ function prettyPrint:wrap(obj, indent, seen)
       end
 
       if self.show_table_addr and valIsTable then
-        local fmt_str = '%s'..__field_type..' %s = '
-        local address = tostring(val):match('^table: (.+)$')
+        local fmt_str = '%s'
+          .. __field_type
+          ..': <' .. color(color.scheme.debugAddress, '%s') .. '> = '
 
         __result = __result
           .. fmt_str:format(
               string.rep(self.tab_char, indent + 2),    -- Space
               color(fieldColor, key),                   -- Field name
-              color(color.scheme.debugAddress, address) -- Table address
+              tostring(val)                             -- Table address
             )
       else
         local fmt_str = '%s'..__field_type..' = '
@@ -105,14 +115,14 @@ function prettyPrint:wrap(obj, indent, seen)
         error = '<'..color(color.scheme.error, 'error: '..tostring(error))..'>'
       end
 
-      __result = __result .. error .. ',\n'
+      __result = __result..error..',\n'
     end
 
     local labelType = ''
     local isArr, arrCount = isArray(obj)
 
     if isArr and self.show_type then
-      labelType = labelType .. ': [array '..arrCount..']'
+      labelType = labelType..': [array '..arrCount..']'
     end
 
     __result = __result

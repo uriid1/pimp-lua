@@ -1,3 +1,5 @@
+local color = require('pimp.color')
+
 local special = {
   [7]  = 'a',
   [8]  = 'b',
@@ -24,14 +26,23 @@ end
 
 controls[92] = tostring('\\\\')
 controls[34] = tostring('\\"')
-controls[39] = tostring("\\'")
+-- controls[39] = tostring("\\'")
 
 local function string_format(str)
-  local res, _ = string.gsub(str, '[%c\1-\39\92]', function (char)
-    return controls[string.byte(char, 1)]
-  end)
+  local result = (color.use_color and color.scheme.String or '')
+  for char in string.gmatch(str, '.') do
+    local byte = string.byte(char, 1)
+    if controls[byte] then
+      result = result .. (color.use_color and color.reset or '')
+      result = result .. color(color.scheme.controls, controls[byte])
+      result = result .. (color.use_color and color.scheme.String or '')
+    else
+      result = result .. char
+    end
+  end
+  result = result .. (color.use_color and color.reset or '')
 
-  return res
+  return result
 end
 
 return string_format

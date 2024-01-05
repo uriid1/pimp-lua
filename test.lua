@@ -62,8 +62,17 @@ p(
   })
 )
 
-function mv(a, b, c)
+local function mv(a, b, c)
   p('Message from local func')
+  local NAME = 'uriid1'
+  p(NAME)
+  p(a, b, c)
+
+  if box then
+    local cdata = box.NULL
+    p(cdata)
+  end
+
   return a, b, c
 end
 p(mv(1, 2, 3))
@@ -95,6 +104,8 @@ local function tt(t1, t2, t3)
   p:enableVisibility()
 end
 
+tt(t1, t2, {})
+
 local t1 = {}
 setmetatable(t1, {
   __add = function() end,
@@ -104,8 +115,6 @@ setmetatable(t1, {
 
 local t2 = {1, 2, 3}
 setmetatable(t2, { __tostring = function() end })
-
-tt(t1, t2, {})
 
 p(getmetatable(t1))
 
@@ -119,8 +128,17 @@ test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
 --
 -- Inspect Tables
 --
-arrTest = { [-99] = 'Array?' }
+local arrTest = {
+  [-99] = 'Array?'
+}
 p(arrTest)
+
+local strArr = {
+  ["1"] = 1,
+  ["2"] = 2,
+  ["3"] = 3,
+}
+p(strArr)
 
 local table_name = {
   message = {
@@ -145,3 +163,11 @@ local table_name = {
 table_name.recursive = table_name
 
 p(table_name)
+
+--
+-- Inspect Tuple
+--
+if box and box.tuple then
+  local tuple = box.tuple.new {'foo', 'bar', 'baz'}
+  p(tuple)
+end

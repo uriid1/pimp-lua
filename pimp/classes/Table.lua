@@ -8,6 +8,7 @@ function Table:new(varname, value)
   obj.type = 'table'
   obj.varname = varname
   obj.value = value
+  obj.show_table_addr = false
   obj.showType = true
   obj.colorise = true
   obj.color = color.scheme.Table
@@ -20,7 +21,12 @@ function Table:compile()
   local data = ''
 
   if self.varname then
-    data = data..tostring(self.varname)..' = '
+    if self.show_table_addr then
+      local adress = color(color.scheme.debugAddress, tostring(self.value))
+      data = data..tostring(self.varname)..': <'..adress..'> = '
+    else
+      data = data..tostring(self.varname)..' = '
+    end
   end
 
   return data
@@ -28,6 +34,12 @@ end
 
 function Table:setShowType(val)
   self.showType = val and true or false
+
+  return self
+end
+
+function Table:setShowTableAddr(val)
+  self.show_table_addr = val and true or false
 
   return self
 end
