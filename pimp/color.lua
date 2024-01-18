@@ -66,6 +66,15 @@ color.scheme = {
   error = color.red,
 }
 
+color.log = {
+  TRACE = color.cyan,
+  DEBUG = color.brightBlue,
+  INFO = color.green,
+  WARN = color.yellow,
+  ERROR = color.brightRed,
+  FATAL = color.red,
+}
+
 function color:colorise(value)
   self.use_color = value and true or false
 end

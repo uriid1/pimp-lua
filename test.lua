@@ -171,3 +171,13 @@ if box and box.tuple then
   local tuple = box.tuple.new {'foo', 'bar', 'baz'}
   p(tuple)
 end
+
+--
+-- Log
+--
+p.log.trace('Trace message')
+p.log.debug('Debug message')
+p.log.info('Info message')
+p.log.warn('Warn message')
+p.log.error('Error message')
+p.log.fatal('Fatal message')
