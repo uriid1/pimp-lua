@@ -100,4 +100,19 @@ p:resetPrefix()
 INFO|-> file.lua:2: 'Wow! It's new preffix!': [length 22]
 ```
 
+**logging**
+```lua
+p.log.trace('Trace message')
+p.log.debug('Debug message')
+p.log.info('Info message')
+p.log.warn('Warn message')
+p.log.error('Error message')
+p.log.fatal('Fatal message')
+```
+
+Options: </br>
+p.log.usecolor - true or false </br>
+p.log.outfile - file path to save log </br>
+p.log.ignore - log ignore table </br>
+
 *See test.lua for more examples
