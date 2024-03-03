@@ -4,174 +4,174 @@ local p = require('pimp.init')
 :enableTableAddr() -- Enable show table address
 :enableVisibility() -- local / global
 
--- --
--- -- Inspect Variables
--- --
--- p('Pimp Module!')
--- p(true, false, nil)
--- p(function() end)
--- p(io.stderr)
--- p(10000, math.pi)
--- p(0/0, -1/0, 1/0)
+--
+-- Inspect Variables
+--
+p('Pimp Module!')
+p(true, false, nil)
+p(function() end)
+p(io.stderr)
+p(10000, math.pi)
+p(0/0, -1/0, 1/0)
 
--- local test = function () end
--- p(function() end, test)
+local test = function () end
+p(function() end, test)
 
--- local co = coroutine.create(function() end)
--- p(co)
+local co = coroutine.create(function() end)
+p(co)
 
--- if box then
---   p(box.NULL)
--- end
+if box then
+  p(box.NULL)
+end
 
--- local str = "foo %s bar"
-
--- --
--- -- Change prefix test
--- --
--- p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
--- p('Wow! It\'s new prefix!')
--- p:resetPrefix()
+local str = "foo %s bar"
 
 
--- --
--- -- Disable color test
--- --
--- p:disableColor()
--- p('String without colors')
--- p:enableColor()
+Change prefix test
+
+p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
+p('Wow! It\'s new prefix!')
+p:resetPrefix()
 
 
--- --
--- -- Disable test
--- --
--- p:disable()
--- p('Hello?')
--- p:enable()
+--
+-- Disable color test
+--
+p:disableColor()
+p('String without colors')
+p:enableColor()
 
 
--- --
--- -- Inspect Functions
--- --
--- local function foo(t)
---   return t, true
--- end
+--
+-- Disable test
+--
+p:disable()
+p('Hello?')
+p:enable()
 
--- p(
---   foo({
---     'apple', 'banana', 'orange'
---   })
--- )
 
--- local function mv(a, b, c)
---   p('Message from local func')
---   local NAME = 'uriid1'
---   p(NAME)
---   p(a, b, c)
+--
+-- Inspect Functions
+--
+local function foo(t)
+  return t, true
+end
 
---   if box then
---     local cdata = box.NULL
---     p(cdata)
---   end
+p(
+  foo({
+    'apple', 'banana', 'orange'
+  })
+)
 
---   return a, b, c
--- end
--- p(mv(1, 2, 3))
+local function mv(a, b, c)
+  p('Message from local func')
+  local NAME = 'uriid1'
+  p(NAME)
+  p(a, b, c)
 
--- local _ = (function(...)
---   p(...)
---   return true
--- end)(4, 5, 6)
+  if box then
+    local cdata = box.NULL
+    p(cdata)
+  end
 
--- local function infunc(a, b)
---   p(a, b)
---   return a + b
--- end
--- p(infunc(10, 5))
+  return a, b, c
+end
+p(mv(1, 2, 3))
 
--- local function func(arg1, ...)
---   return p(arg1, ...)
--- end
--- func(1, '2', {})
+local _ = (function(...)
+  p(...)
+  return true
+end)(4, 5, 6)
 
--- local function funcVararg(...)
---   p()
--- end
--- funcVararg()
+local function infunc(a, b)
+  p(a, b)
+  return a + b
+end
+p(infunc(10, 5))
 
--- local function tt(t1, t2, t3)
---   p:disableVisibility()
---   p(t1, t2, t3)
---   p:enableVisibility()
--- end
+local function func(arg1, ...)
+  return p(arg1, ...)
+end
+func(1, '2', {})
 
--- tt(t1, t2, {})
+local function funcVararg(...)
+  p()
+end
+funcVararg()
 
--- local t1 = {}
--- setmetatable(t1, {
---   __add = function() end,
---   __sub = function() end,
---   __mul = function() end,
--- })
+local function tt(t1, t2, t3)
+  p:disableVisibility()
+  p(t1, t2, t3)
+  p:enableVisibility()
+end
 
--- local t2 = {1, 2, 3}
--- setmetatable(t2, { __tostring = function() end })
+tt(t1, t2, {})
 
--- p(getmetatable(t1))
+local t1 = {}
+setmetatable(t1, {
+  __add = function() end,
+  __sub = function() end,
+  __mul = function() end,
+})
 
--- --
--- function test_1(a, ...) p(); return a, ... end
--- function test_2(b, ...) p(); return b, ... end
--- function test_3(c, ...) p(); return c, ... end
+local t2 = {1, 2, 3}
+setmetatable(t2, { __tostring = function() end })
 
--- test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
+p(getmetatable(t1))
 
--- --
--- -- Inspect Tables
--- --
--- local arrTest = {
---   [-99] = 'Array?'
--- }
--- p(arrTest)
+--
+function test_1(a, ...) p(); return a, ... end
+function test_2(b, ...) p(); return b, ... end
+function test_3(c, ...) p(); return c, ... end
 
--- local strArr = {
---   ["1"] = 1,
---   ["2"] = 2,
---   ["3"] = 3,
--- }
--- p(strArr)
+test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
 
--- local table_name = {
---   message = {
---     chat = {
---       title = 'Кто съел мороженое?',
---     }
---   },
+--
+-- Inspect Tables
+--
+local arrTest = {
+  [-99] = 'Array?'
+}
+p(arrTest)
 
---   ['array'] = {
---     "apple.", 'banana', 'orange', 'green'
---   },
+local strArr = {
+  ["1"] = 1,
+  ["2"] = 2,
+  ["3"] = 3,
+}
+p(strArr)
 
---   inf = 1/0,
---   nan = 0/0,
---   boolean = true,
---   string = '\tHello,\r\nworld!\r\n $(.-)^',
---   func = function() end,
---   thread = coroutine.create(function() end),
---   empty_table = {},
---   NULL = box and box.NULL or ':)'
--- }
--- table_name.recursive = table_name
+local table_name = {
+  message = {
+    chat = {
+      title = 'Кто съел мороженое?',
+    }
+  },
 
--- p(table_name)
+  ['array'] = {
+    "apple.", 'banana', 'orange', 'green'
+  },
 
--- --
--- -- Inspect Tuple
--- --
--- if box and box.tuple then
---   local tuple = box.tuple.new {'foo', 'bar', 'baz'}
---   p(tuple)
--- end
+  inf = 1/0,
+  nan = 0/0,
+  boolean = true,
+  string = '\tHello,\r\nworld!\r\n $(.-)^',
+  func = function() end,
+  thread = coroutine.create(function() end),
+  empty_table = {},
+  NULL = box and box.NULL or ':)'
+}
+table_name.recursive = table_name
+
+p(table_name)
+
+--
+-- Inspect Tuple
+--
+if box and box.tuple then
+  local tuple = box.tuple.new {'foo', 'bar', 'baz'}
+  p(tuple)
+end
 
 --
 -- Log

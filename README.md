@@ -16,6 +16,8 @@ p("This is a debugging message", 42, { key = "value" }, true)
 ```
 
 **Inspect Variables**
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/inspect_variables.png)
+
 ```lua
 p('Pimp Module!')
 p(true, false, nil)
@@ -47,6 +49,8 @@ p|> file.lua:21: <cdata<void *>: NULL>: [cdata]
 ```
 
 **Inspect Tables**
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/inspect_tables.png)
+
 ```lua
 local table_name = {
   name = "John",
@@ -65,6 +69,8 @@ p|> test.lua:1: table_name = {
 ```
 
 **Inspect Functions**
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/inspect_functions.png)
+
 ```lua
 local function sum(a, b)
   p(a, b)
@@ -91,6 +97,8 @@ p|> file.lua:6: 'World': [length 5]
 ```
 
 **Change prefix**
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/new_prefix.png)
+
 ```lua
 p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
 p('Wow! It\'s new prefix!')
