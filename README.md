@@ -1,5 +1,5 @@
 # Pimp Module
-![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshot.png)
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp.png)
 * The screenshot includes all the features, namely - color scheme, type display, local/global scope display, and table address display.
 
 ## Overview
@@ -101,6 +101,8 @@ INFO|-> file.lua:2: 'Wow! It's new preffix!': [length 22]
 ```
 
 **logging**
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/log.png)
+
 ```lua
 p.log.trace('Trace message')
 p.log.debug('Debug message')

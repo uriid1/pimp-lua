@@ -6,6 +6,8 @@ local write = require('pimp.write')
 local color = require('pimp.color')
 local constructor = require('pimp.constructor')
 local prettyPrint = require('pimp.pretty-print')
+local makePath = require('pimp.utils.makePath')
+local plog = require('pimp.log')
 
 local DEFAULT_PREFIX = 'p'
 local DEFAULT_PREFIX_SEP = '| '
@@ -23,7 +25,10 @@ local pimp = {
   show_table_addr = false,
   match_path = '',
 
-  -- p color
+  -- Logging
+  log = plog,
+
+  -- Color
   color = color,
 }
 
@@ -106,23 +111,6 @@ local function findArgName(addr, __type, linepos)
   return nil, nil
 end
 
-local function makePath(info)
-  local filename = info.short_src
-
-  if pimp.full_path == false then
-    filename = filename:match('.+/(.-)$')
-  else
-    if pimp.match_path ~= '' then
-      local match_path = filename:match(pimp.match_path)
-      if match_path then
-        filename = match_path
-      end
-    end
-  end
-
-  return filename
-end
-
 ---
 -- Output debugging information
 -- @param ... any Arguments to be printed
@@ -141,6 +129,18 @@ function pimp:debug(...)
 
   -- debug
   -- write(prettyPrint(info))
+
+  -- local test = ''
+  -- for i = 1, math.huge do
+  --   local info = debug.getinfo(i)
+  --   if not info.name then
+  --     break
+  --   end
+
+  --   test = test .. ' -> ' .. info.name
+  -- end
+
+  -- write(test)
 
   local infunc = ''
   if info.namewhat ~= '' then
@@ -216,7 +216,7 @@ function pimp:debug(...)
   end
 
   local linepos = info.currentline
-  local filename = makePath(info)
+  local filename = makePath(info, { fullPath = pimp.full_path, matchPath = pimp.match_path })
 
   -- local filepath = info.source:match('@(.+)')
   local callpos = filename .. ':' .. linepos
@@ -382,75 +382,6 @@ function pimp:disableTableAddr()
   self.show_table_addr = false
 
   return self
-end
-
---- Log
---
-pimp.log = {
-  outfile = 'log.txt',
-  usecolor = false,
-  ignore = {},
-}
-
-local function writeLog(logData)
-  local fd = io.open(pimp.log.outfile, 'a')
-  fd:write(logData)
-  fd:close()
-end
-
-local function makeLog(logType, message)
-  local level = 3
-  local info = debug.getinfo(level)
-
-  local logFormat = ('[%s %s] ')
-    :format(logType, os.date("%H:%M:%S"))
-
-  local colorFormat = color(color.log[logType], logFormat)
-  local filePos = makePath(info)..':'..info.currentline..': '
-
-  if pimp.log.usecolor then
-    writeLog(colorFormat..filePos..message..'\n')
-  else
-    writeLog(logFormat..filePos..message..'\n')
-  end
-
-  return colorFormat..filePos
-end
-
-function pimp.log.trace(message)
-  local logType = 'TRACE'
-  if pimp.log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function pimp.log.debug(message)
-  local logType = 'DEBUG'
-  if pimp.log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function pimp.log.info(message)
-  local logType = 'INFO'
-  if pimp.log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function pimp.log.warn(message)
-  local logType = 'WARN'
-  if pimp.log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function pimp.log.error(message)
-  local logType = 'ERROR'
-  if pimp.log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function pimp.log.fatal(message)
-  local logType = 'FATAL'
-  if pimp.log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
 end
 
 ---
