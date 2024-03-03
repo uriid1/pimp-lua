@@ -27,8 +27,9 @@ end
 local str = "foo %s bar"
 
 
-Change prefix test
-
+--
+-- Change prefix test
+--
 p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
 p('Wow! It\'s new prefix!')
 p:resetPrefix()

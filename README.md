@@ -1,6 +1,4 @@
-# Pimp Module
 ![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp.png)
-* The screenshot includes all the features, namely - color scheme, type display, local/global scope display, and table address display.
 
 ## Overview
 The Pimp Module designed to aid in debugging and logging by providing functions to print and format information about function calls, arguments, and more. It offers a simple way to enhance the debugging process in your Lua applications.
