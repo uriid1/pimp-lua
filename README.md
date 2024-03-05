@@ -119,7 +119,7 @@ p.log.fatal('Fatal message')
 ```
 
 Options: </br>
-p.log.usecolor - true or false </br>
+p.log.writeWithColor - true or false </br>
 p.log.outfile - file path to save log </br>
 p.log.ignore - log ignore table </br>
 

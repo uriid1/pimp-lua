@@ -7,7 +7,7 @@ local write = require('pimp.write')
 
 local log = {}
 log.outfile = 'log.txt'
-log.usecolor = false
+log.writeWithColor = false
 log.ignore = {}
 
 local models = {
@@ -35,7 +35,7 @@ local function makeLog(logType, message)
   local colorFormat = color(color.log[logType], logFormat)
   local filePos = info.short_src..':'..info.currentline..': '
 
-  if log.usecolor then
+  if log.writeWithColor then
     writeLog(colorFormat..filePos..message..'\n')
   else
     writeLog(logFormat..filePos..message..'\n')
@@ -60,7 +60,7 @@ for i = 1, #models do
 
   log[type] = function(message)
     if not findIgnore(type) then
-      write(makeLog(type, message), message)
+      write(makeLog(type, message)..' '..message)
     end
   end
 end
