@@ -5,10 +5,18 @@
 local color = require('pimp.color')
 local write = require('pimp.write')
 
-local log = {
-  outfile = 'log.txt',
-  usecolor = false,
-  ignore = {},
+local log = {}
+log.outfile = 'log.txt'
+log.usecolor = false
+log.ignore = {}
+
+local models = {
+  'trace',
+  'debug',
+  'info',
+  'warn',
+  'error',
+  'fatal'
 }
 
 local function writeLog(logData)
@@ -18,8 +26,8 @@ local function writeLog(logData)
 end
 
 local function makeLog(logType, message)
-  local level = 3
-  local info = debug.getinfo(level)
+  -- denug info level = 3
+  local info = debug.getinfo(3, 'Sl')
 
   local logFormat = ('[%s %s] ')
     :format(logType, os.date("%H:%M:%S"))
@@ -36,40 +44,25 @@ local function makeLog(logType, message)
   return colorFormat..filePos
 end
 
-function log.trace(message)
-  local logType = 'TRACE'
-  if log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
+local function findIgnore(logType)
+  for i = 1, #log.ignore do
+    local igonoreType = log.ignore[i]
+    if igonoreType == logType then
+      return true
+    end
+  end
+
+  return false
 end
 
-function log.debug(message)
-  local logType = 'DEBUG'
-  if log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
+for i = 1, #models do
+  local type = models[i]
 
-function log.info(message)
-  local logType = 'INFO'
-  if log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function log.warn(message)
-  local logType = 'WARN'
-  if log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function log.error(message)
-  local logType = 'ERROR'
-  if log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
-end
-
-function log.fatal(message)
-  local logType = 'FATAL'
-  if log.ignore[logType] then return end
-  write(makeLog(logType, message), message)
+  log[type] = function(message)
+    if not findIgnore(type) then
+      write(makeLog(type, message), message)
+    end
+  end
 end
 
 return log

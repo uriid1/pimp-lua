@@ -177,6 +177,7 @@ end
 --
 -- Log
 --
+p.log.ignore = {'info', 'warn'}
 p.log.trace(('Trace %s'):format 'message')
 p.log.debug('Debug message')
 p.log.info('Info message')

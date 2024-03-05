@@ -1,5 +1,5 @@
 package = "pimp"
-version = "1.5-4"
+version = "1.6-0"
 
 source = {
   url = "git+https://github.com/uriid1/pimp-lua.git",
@@ -14,7 +14,6 @@ description = {
   license = "MIT"
 }
 
-
 dependencies = {
  "lua >= 5.1",
  "luafilesystem >= 1.8.0",
@@ -24,14 +23,15 @@ build = {
   type = "builtin",
   modules = {
     [package] = package.."/init.lua",
+    [package..".log"] = package.."/log.lua",
     [package..".color"] = package.."/color.lua",
+    [package..".colorscheme.default"] = package.."/colorscheme/default.lua",
     [package..".write"] = package.."/write.lua",
     [package..".pretty-print"] = package.."/pretty-print.lua",
     [package..".constructor"] = package.."/constructor.lua",
     [package..".string-format"] = package.."/string-format.lua",
-
+    [package..".utils.makePath"] = package.."/utils/makePath.lua",
     [package..".enums.metamethods"] = package.."/enums/metamethods.lua",
-
     [package..".classes.Cdata"] = package.."/classes/Cdata.lua",
     [package..".classes.String"] = package.."/classes/String.lua",
     [package..".classes.Userdata"] = package.."/classes/Userdata.lua",
