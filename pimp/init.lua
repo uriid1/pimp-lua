@@ -270,6 +270,23 @@ function pimp:debug(...)
   return ...
 end
 
+-- Message
+function pimp.msg(text)
+  local level = 2
+  local info = debug.getinfo(level)
+
+  local linepos = info.currentline
+  local filename = makePath(info, { fullPath = pimp.full_path, matchPath = pimp.match_path })
+
+  local message = ('[%s] %s:%s %s'):format(
+    color(color.brightGreen, os.date("%H:%M:%S")),
+    filename, linepos,
+    color(color.brightYellow, tostring(text))
+  )
+
+  write(message)
+end
+
 --- Set prefix and separator
 -- @param param Table { prefix='cool', sep='->' }
 function pimp:setPrefix(param)
@@ -308,6 +325,7 @@ end
 --- Matching path
 function pimp:matchPath(str)
   self.match_path = tostring(str)
+  self.log.match_path = self.match_path
 
   return self
 end

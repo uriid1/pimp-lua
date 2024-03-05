@@ -7,8 +7,9 @@ local write = require('pimp.write')
 
 local log = {}
 log.outfile = 'log.txt'
-log.writeWithColor = false
+log.usecolor = false
 log.ignore = {}
+log.match_path = ''
 
 local models = {
   'trace',
@@ -32,10 +33,15 @@ local function makeLog(logType, message)
   local logFormat = ('[%s %s] ')
     :format(logType, os.date("%H:%M:%S"))
 
-  local colorFormat = color(color.log[logType], logFormat)
-  local filePos = info.short_src..':'..info.currentline..': '
+  local path = info.short_src
+  if log.match_path then
+    path = path:match(log.match_path)
+  end
 
-  if log.writeWithColor then
+  local colorFormat = color(color.log[logType], logFormat)
+  local filePos = path..':'..info.currentline..': '
+
+  if log.usecolor then
     writeLog(colorFormat..filePos..message..'\n')
   else
     writeLog(logFormat..filePos..message..'\n')
@@ -60,7 +66,7 @@ for i = 1, #models do
 
   log[type] = function(message)
     if not findIgnore(type) then
-      write(makeLog(type, message)..' '..message)
+      write(makeLog(type, message)..' '.. message)
     end
   end
 end
