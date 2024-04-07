@@ -2,6 +2,7 @@
 -- @module pimp
 --
 -- Modules
+local config = require('pimp.config')
 local write = require('pimp.write')
 local color = require('pimp.color')
 local constructor = require('pimp.constructor')
@@ -11,19 +12,10 @@ local plog = require('pimp.log')
 
 local DEFAULT_PREFIX = 'p'
 local DEFAULT_PREFIX_SEP = '| '
-local DEFAULT_MODULE_NAME = 'p'
 
 local pimp = {
   prefix = DEFAULT_PREFIX,
   prefix_sep = DEFAULT_PREFIX_SEP,
-  module_name = DEFAULT_MODULE_NAME,
-  output = true,
-  colors = true,
-  full_path = true,
-  show_visibility = false,
-  show_type = false,
-  show_table_addr = false,
-  match_path = '',
 
   -- Logging
   log = plog,
@@ -116,7 +108,7 @@ end
 -- @param ... any Arguments to be printed
 -- @return ... The passed arguments
 function pimp:debug(...)
-  if not self.output then
+  if not config.pimp.output then
     return ...
   end
 
@@ -148,7 +140,7 @@ function pimp:debug(...)
     local funcArgs = ''
     local visibilityLabel = ''
 
-    if self.show_visibility then
+    if config.pimp.show_visibility then
       if info.namewhat == 'local' or
         info.namewhat == 'global'
       then
@@ -216,7 +208,7 @@ function pimp:debug(...)
   end
 
   local linepos = info.currentline
-  local filename = makePath(info, { fullPath = pimp.full_path, matchPath = pimp.match_path })
+  local filename = makePath(info)
 
   -- local filepath = info.source:match('@(.+)')
   local callpos = filename .. ':' .. linepos
@@ -231,10 +223,10 @@ function pimp:debug(...)
 
     local obj = constructor(argType, value, argName, funcArgs)
 
-    obj:setShowType(self.show_type)
+    obj:setShowType(config.pimp.show_type)
 
     local visibilityLabel = ''
-    if self.show_visibility then
+    if config.pimp.show_visibility then
       if isLocal ~= nil then
         visibilityLabel = isLocal and 'local ' or 'global '
         visibilityLabel = color(color.scheme.visibility, visibilityLabel)
@@ -244,13 +236,13 @@ function pimp:debug(...)
     if argType == 'table' then
       local __mt_label = ''
       local __mt = getmetatable(value)
-      if __mt and self.show_type then
+      if __mt and config.pimp.show_type then
         __mt_label = ': ['..color(color.scheme.metatable, 'metatable')..']'
       end
 
-      prettyPrint:setShowType(self.show_type)
-      prettyPrint:setShowTableAddr(self.show_table_addr)
-      obj:setShowTableAddr(self.show_table_addr)
+      prettyPrint:setShowType(config.pimp.show_type)
+      prettyPrint:setShowTableAddr(config.pimp.show_table_addr)
+      obj:setShowTableAddr(config.pimp.show_table_addr)
 
       table.insert(data, visibilityLabel..obj:compile()..prettyPrint(value)..__mt_label)
     else
@@ -276,7 +268,7 @@ function pimp.msg(text)
   local info = debug.getinfo(level)
 
   local linepos = info.currentline
-  local filename = makePath(info, { fullPath = pimp.full_path, matchPath = pimp.match_path })
+  local filename = makePath(info)
 
   local message = ('[%s] %s:%s %s'):format(
     color(color.brightGreen, os.date("%H:%M:%S")),
@@ -310,43 +302,43 @@ end
 
 --- Enable debug output
 function pimp:disable()
-  self.output = false
+  config.pimp.output = false
 
   return self
 end
 
 --- Disable debug output
 function pimp:enable()
-  self.output = true
+  config.pimp.output = true
 
   return self
 end
 
 --- Matching path
 function pimp:matchPath(str)
-  self.match_path = tostring(str)
-  self.log.match_path = self.match_path
+  config.pimp.match_path = tostring(str)
+  self.log.match_path = config.pimp.match_path
 
   return self
 end
 
 --- Disable full path output
 function pimp:disableFullPath()
-  self.full_path = false
+  config.pimp.full_path = false
 
   return self
 end
 
 --- Enable full path output
 function pimp:enableFullPath()
-  self.full_path = true
+  config.pimp.full_path = true
 
   return self
 end
 
 --- Disable colour output
 function pimp:disableColor()
-  self.colors = false
+  config.pimp.colors = false
   color:colorise(false)
 
   return self
@@ -354,7 +346,7 @@ end
 
 --- Enable colour output
 function pimp:enableColor()
-  self.colors = true
+  config.pimp.colors = true
   color:colorise(true)
 
   return self
@@ -362,42 +354,42 @@ end
 
 --- Enable Visibility
 function pimp:enableVisibility()
-  self.show_visibility = true
+  config.pimp.show_visibility = true
 
   return self
 end
 
 --- Disable Visibility
 function pimp:disableVisibility()
-  self.show_visibility = false
+  config.pimp.show_visibility = false
 
   return self
 end
 
 --- Enable show type
 function pimp:enableType()
-  self.show_type = true
+  config.pimp.show_type = true
 
   return self
 end
 
 --- Disable show type
 function pimp:disableType()
-  self.show_type = false
+  config.pimp.show_type = false
 
   return self
 end
 
 --- Enable table address
 function pimp:enableTableAddr()
-  self.show_table_addr = true
+  config.pimp.show_table_addr = true
 
   return self
 end
 
 --- Disable table address
 function pimp:disableTableAddr()
-  self.show_table_addr = false
+  config.pimp.show_table_addr = false
 
   return self
 end

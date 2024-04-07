@@ -1,5 +1,5 @@
 package = "pimp"
-version = "1.6-0"
+version = "1.7-0"
 
 source = {
   url = "git+https://github.com/uriid1/pimp-lua.git",
@@ -23,6 +23,7 @@ build = {
   type = "builtin",
   modules = {
     [package] = package.."/init.lua",
+    [package..".config"] = package.."/config.lua",
     [package..".log"] = package.."/log.lua",
     [package..".color"] = package.."/color.lua",
     [package..".colorscheme.default"] = package.."/colorscheme/default.lua",

@@ -2,14 +2,11 @@
 -- Logging
 -- @module log
 --
+local config = require('pimp.config')
 local color = require('pimp.color')
 local write = require('pimp.write')
 
 local log = {}
-log.outfile = 'log.txt'
-log.usecolor = false
-log.ignore = {}
-log.match_path = ''
 
 local models = {
   'trace',
@@ -21,27 +18,27 @@ local models = {
 }
 
 local function writeLog(logData)
-  local fd = io.open(log.outfile, 'a')
+  local fd = io.open(config.log.outfile, 'a')
   fd:write(logData)
   fd:close()
 end
 
 local function makeLog(logType, message)
-  -- denug info level = 3
+  -- debug info level = 3
   local info = debug.getinfo(3, 'Sl')
 
   local logFormat = ('[%s %s] ')
     :format(logType, os.date("%H:%M:%S"))
 
   local path = info.short_src
-  if log.match_path then
-    path = path:match(log.match_path)
+  if config.log.match_path ~= '' then
+    path = path:match(config.log.match_path)
   end
 
   local colorFormat = color(color.log[logType], logFormat)
   local filePos = path..':'..info.currentline..': '
 
-  if log.usecolor then
+  if config.log.usecolor then
     writeLog(colorFormat..filePos..message..'\n')
   else
     writeLog(logFormat..filePos..message..'\n')
@@ -51,8 +48,8 @@ local function makeLog(logType, message)
 end
 
 local function findIgnore(logType)
-  for i = 1, #log.ignore do
-    local igonoreType = log.ignore[i]
+  for i = 1, #config.log.ignore do
+    local igonoreType = config.log.ignore[i]
     if igonoreType == logType then
       return true
     end

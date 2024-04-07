@@ -24,16 +24,12 @@ if box then
   p(box.NULL)
 end
 
-local str = "foo %s bar"
-
-
 --
 -- Change prefix test
 --
 p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
 p('Wow! It\'s new prefix!')
 p:resetPrefix()
-
 
 --
 -- Disable color test
@@ -42,14 +38,12 @@ p:disableColor()
 p('String without colors')
 p:enableColor()
 
-
 --
 -- Disable test
 --
 p:disable()
 p('Hello?')
 p:enable()
-
 
 --
 -- Inspect Functions
@@ -96,9 +90,9 @@ end
 func(1, '2', {})
 
 local function funcVararg(...)
-  p()
+  p(...)
 end
-funcVararg()
+funcVararg(1, 2, 3)
 
 local function tt(t1, t2, t3)
   p:disableVisibility()
@@ -121,9 +115,9 @@ setmetatable(t2, { __tostring = function() end })
 p(getmetatable(t1))
 
 --
-function test_1(a, ...) p(); return a, ... end
-function test_2(b, ...) p(); return b, ... end
-function test_3(c, ...) p(); return c, ... end
+local function test_1(a, ...) p(); return a, ... end
+local function test_2(b, ...) p(); return b, ... end
+local function test_3(c, ...) p(); return c, ... end
 
 test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
 

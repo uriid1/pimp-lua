@@ -2,32 +2,29 @@
 -- Table Printing Module
 -- @module pretty-print
 --
+local config = require('pimp.config')
 local color = require('pimp.color')
 local constructor = require('pimp.constructor')
 local metamethods = require('pimp.enums.metamethods')
 
-local prettyPrint = {
-  tab_char = ' ',
-  show_type = true,
-  show_table_addr = false,
-}
+local prettyPrint = {}
 
 --
-local function isArray(t)
-  if type(t) ~= 'table' then
-    return false
+local function isArray(tbl)
+  if type(tbl) ~= 'table' then
+    return false, nil
   end
 
-  local count = 1
-  for index in next, t do
-    if type(index) ~= 'number' then
+  local index = 0
+  for _,_ in next, tbl do
+    index = index + 1
+
+    if tbl[index] == nil then
       return false, nil
     end
-
-    count = count + 1
   end
 
-  return true, count-1
+  return true, index
 end
 
 --- Wrap an object for pretty printing
@@ -42,7 +39,7 @@ function prettyPrint:wrap(obj, indent, seen)
 
   if __type == 'nil' then
     return constructor('nil', obj)
-           :setShowType(self.show_type)
+           :setShowType(config.pretty_print.show_type)
            :compile()
   end
 
@@ -86,24 +83,24 @@ function prettyPrint:wrap(obj, indent, seen)
         fieldColor = color.scheme.metatable
       end
 
-      if self.show_table_addr and valIsTable then
+      if config.pretty_print.show_table_addr and valIsTable then
         local fmt_str = '%s'
           .. __field_type
           ..': <' .. color(color.scheme.debugAddress, '%s') .. '> = '
 
         __result = __result
           .. fmt_str:format(
-              string.rep(self.tab_char, indent + 2),    -- Space
-              color(fieldColor, key),                   -- Field name
-              tostring(val)                             -- Table address
+              string.rep(config.pretty_print.tab_char, indent + 2), -- Space
+              color(fieldColor, key), -- Field name
+              tostring(val) -- Table address
             )
       else
         local fmt_str = '%s'..__field_type..' = '
 
         __result = __result
           .. fmt_str:format(
-              string.rep(self.tab_char, indent + 2), -- Space
-              color(fieldColor, key)                 -- Field name
+              string.rep(config.pretty_print.tab_char, indent + 2), -- Space
+              color(fieldColor, key) -- Field name
             )
       end
 
@@ -121,12 +118,12 @@ function prettyPrint:wrap(obj, indent, seen)
     local labelType = ''
     local isArr, arrCount = isArray(obj)
 
-    if isArr and self.show_type then
+    if isArr and config.pretty_print.show_type then
       labelType = labelType..': [array '..arrCount..']'
     end
 
     __result = __result
-      .. string.rep(self.tab_char, indent)
+      .. string.rep(config.pretty_print.tab_char, indent)
       .. color(color.scheme.tableBrackets, '}')
       .. labelType
 
@@ -134,18 +131,18 @@ function prettyPrint:wrap(obj, indent, seen)
   end
 
   return constructor(__type, obj)
-         :setShowType(self.show_type)
+         :setShowType(config.pretty_print.show_type)
          :compile()
 end
 
 function prettyPrint:setShowType(val)
-  self.show_type = val and true or false
+  config.pretty_print.show_type = val and true or false
 
   return self
 end
 
 function prettyPrint:setShowTableAddr(val)
-  self.show_table_addr = val and true or false
+  config.pretty_print.show_table_addr = val and true or false
 
   return self
 end

@@ -1,3 +1,4 @@
+local config = require('pimp.config')
 local color = require('pimp.color')
 
 local special = {
@@ -24,23 +25,29 @@ for i = 0, 31 do
   controls[i] = tostring('\\' .. c)
 end
 
-controls[92] = tostring('\\\\')
-controls[34] = tostring('\\"')
--- controls[39] = tostring("\\'")
-
 local function string_format(str)
-  local result = (color.use_color and color.scheme.String or '')
+  if config.string_format.full_escape then
+    controls[92] = tostring('\\\\')
+    controls[34] = tostring('\\"')
+    controls[39] = tostring("\\'")
+  else
+    controls[92] = nil
+    controls[34] = nil
+    controls[39] = nil
+  end
+
+  local result = (config.color.use_color and color.scheme.String or '')
   for char in string.gmatch(str, '.') do
     local byte = string.byte(char, 1)
     if controls[byte] then
-      result = result .. (color.use_color and color.reset or '')
+      result = result .. (config.color.use_color and color.reset or '')
       result = result .. color(color.scheme.controls, controls[byte])
-      result = result .. (color.use_color and color.scheme.String or '')
+      result = result .. (config.color.use_color and color.scheme.String or '')
     else
       result = result .. char
     end
   end
-  result = result .. (color.use_color and color.reset or '')
+  result = result .. (config.color.use_color and color.reset or '')
 
   return result
 end
