@@ -52,6 +52,7 @@ local scheme = {
   tableField = color.yellow,
   visibility = color.blue,
   controls = color.magenta,
+  escape = "\27[38;5;207m",
   error = color.red,
 }
 

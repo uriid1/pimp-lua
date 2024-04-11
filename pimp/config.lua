@@ -6,6 +6,7 @@ local config = {
     show_visibility = false,
     show_type = false,
     show_table_addr = false,
+    show_full_functions_stack = true,
     match_path = '',
   },
 
@@ -16,7 +17,8 @@ local config = {
   },
 
   string_format = {
-    full_escape = true
+    escape_controls = false,
+    escape_colorize = true,
   },
 
   log = {

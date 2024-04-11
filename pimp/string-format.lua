@@ -1,6 +1,21 @@
 local config = require('pimp.config')
 local color = require('pimp.color')
 
+local escape = {
+  ['-'] = true,
+  ['%'] = true,
+  ['('] = true,
+  [')'] = true,
+  ['.'] = true,
+  ['+'] = true,
+  ['*'] = true,
+  ['?'] = true,
+  ['['] = true,
+  [']'] = true,
+  ['^'] = true,
+  ['$'] = true,
+}
+
 local special = {
   [7]  = 'a',
   [8]  = 'b',
@@ -26,7 +41,7 @@ for i = 0, 31 do
 end
 
 local function string_format(str)
-  if config.string_format.full_escape then
+  if config.string_format.escape_controls then
     controls[92] = tostring('\\\\')
     controls[34] = tostring('\\"')
     controls[39] = tostring("\\'")
@@ -44,6 +59,10 @@ local function string_format(str)
       result = result .. color(color.scheme.controls, controls[byte])
       result = result .. (config.color.use_color and color.scheme.String or '')
     else
+      if config.string_format.escape_colorize and escape[char] then
+        char = color.scheme.escape..char..color.reset..color.scheme.String
+      end
+
       result = result .. char
     end
   end
