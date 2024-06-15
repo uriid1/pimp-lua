@@ -428,6 +428,13 @@ function pimp:disableFullFunctionsStack()
 end
 
 ---
+function pimp.pp(t)
+  prettyPrint:setShowType(config.pimp.show_type)
+  prettyPrint:setShowTableAddr(config.pimp.show_table_addr)
+  return prettyPrint(t)
+end
+
+---
 -- Set up the 'debug' function to be called
 -- when attempting to invoke the table as a function
 setmetatable(pimp, { __call = pimp.debug })
