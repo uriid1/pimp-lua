@@ -59,8 +59,10 @@ local function string_format(str)
       result = result .. color(color.scheme.controls, controls[byte])
       result = result .. (config.color.use_color and color.scheme.String or '')
     else
-      if config.string_format.escape_colorize and escape[char] then
-        char = color.scheme.escape..char..color.reset..color.scheme.String
+      if config.color.use_color then
+        if config.string_format.escape_colorize and escape[char] then
+          char = color.scheme.escape..char..color.reset..color.scheme.String
+        end
       end
 
       result = result .. char
