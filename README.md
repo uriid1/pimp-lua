@@ -1,21 +1,11 @@
 ![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp.png)
 
 ## Overview
-The Pimp Module designed to aid in debugging and logging by providing functions to print and format information about function calls, arguments, and more. It offers a simple way to enhance the debugging process in your Lua applications.
+Module for pretty-printing tables and text, as well as for simple debugging using Lua's built-in debug methods. The main goal of the module is to replace print with a more advanced tool.
 
-## Features and Usage
-**Debug Function**
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/screenshot.png)
 
-The core functionality of the module is the debug function. You can use it to print and format debugging information:
-
-```lua
-local p = require 'pimp'
-p("This is a debugging message", 42, { key = "value" }, true)
-```
-
-**Inspect Variables**
-![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/inspect_variables.png)
-
+## Inspect Variables
 ```lua
 p('Pimp Module!')
 p(true, false, nil)
@@ -34,41 +24,17 @@ if box then
   p(box.NULL)
 end
 ```
-```
-p|> file.lua:7: 'Pimp Module!': [len 12]
-p|> file.lua:8: true: [boolean], false: [boolean], nil
-p|> file.lua:9: <function: 0x402899e8>
-p|> file.lua:10: <file (0x7f14da5f74e0)>: [userdata]
-p|> file.lua:11: 10000: [number], 3.1415926535898: [number]
-p|> file.lua:12: nan: [number], -inf: [number], inf: [number]
-p|> file.lua:15: <function: 0x41d7a090>, test = <function: 0x411c7b70>
-p|> file.lua:18: co = <thread: 0x411f8a30>
-p|> file.lua:21: <cdata<void *>: NULL>: [cdata]
-```
 
-**Inspect Tables**
-![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/inspect_tables.png)
-
+## Inspect Tables
 ```lua
-local table_name = {
+local table_name = p({
   name = "John",
   age = 30,
   city = "New York"
-}
-
-p(t)
-```
-```
-p|> test.lua:1: table_name = {
-  age = 30: [number],
-  name = 'John': [length 4],
-  city = 'New York': [length 8],
-}: [table]
+})
 ```
 
-**Inspect Functions**
-![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/inspect_functions.png)
-
+## Inspect Functions
 ```lua
 local function sum(a, b)
   p(a, b)
@@ -76,10 +42,6 @@ local function sum(a, b)
 end
 
 local result_sum = p(sum(10, 5))
-```
-```
-p|> file.lua:5 in sum(a: 10, b: 5) 10: [number], 5: [number]
-p|> file.lua:6: 15: [number]
 ```
 
 **Disable or Enable output**
@@ -90,13 +52,8 @@ p:enable()
 
 p('World')
 ```
-```
-p|> file.lua:6: 'World': [length 5]
-```
 
 **Change prefix**
-![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/new_prefix.png)
-
 ```lua
 p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
 p('Wow! It\'s new prefix!')
@@ -107,8 +64,6 @@ INFO|-> file.lua:2: 'Wow! It's new preffix!': [length 22]
 ```
 
 **logging**
-![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/log.png)
-
 ```lua
 p.log.trace('Trace message')
 p.log.debug('Debug message')
@@ -118,9 +73,23 @@ p.log.error('Error message')
 p.log.fatal('Fatal message')
 ```
 
-Options: </br>
-p.log.writeWithColor - true or false </br>
-p.log.outfile - file path to save log </br>
-p.log.ignore - log ignore table </br>
-
-*See test.lua for more examples
+Extensive configuration </br>
+```lua
+p:resetPrefix()
+p:disable()
+p:enable()
+p:matchPath(str)
+p:disableFullPath()
+p:enableFullPath()
+p:disableColor()
+p:enableColor()
+p:enableVisibility()
+p:disableVisibility()
+p:enableType()
+p:disableType()
+p:enableTableAddr()
+p:disableTableAddr()
+p:enableFullFunctionsStack()
+p:disableFullFunctionsStack()
+p.pp(t)
+```

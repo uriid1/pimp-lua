@@ -1,3 +1,5 @@
+--- Объект прототип thread типа
+--
 local color = require('pimp.color')
 
 local Thread = {}

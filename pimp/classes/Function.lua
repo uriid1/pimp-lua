@@ -1,3 +1,5 @@
+--- Объект прототип фукнции
+--
 local color = require('pimp.color')
 
 local Function = {}

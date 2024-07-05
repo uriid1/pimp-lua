@@ -1,7 +1,6 @@
----
+--- Модуль для претти принта таблиц и небольшого дебагинга
 -- @module pimp
---
--- Modules
+
 local config = require('pimp.config')
 local write = require('pimp.write')
 local color = require('pimp.color')
@@ -17,14 +16,11 @@ local DEFAULT_MAX_SEEN = 1000
 local pimp = {
   prefix = DEFAULT_PREFIX,
   prefix_sep = DEFAULT_PREFIX_SEP,
-
-  -- Logging
   log = plog,
-
-  -- Color
   color = color,
 }
 
+-- Хеширование найденных адресов
 --
 local seenArg = {}
 local function seenAdd(addr, linepos, name)
@@ -36,9 +32,6 @@ local function seenAdd(addr, linepos, name)
   seenArg[addr] = {}
   seenArg[addr][linepos] = name
 
-  -- debug
-  -- write(prettyPrint(seenArg))
-
   return name
 end
 
@@ -49,9 +42,10 @@ local function seenExists(addr, linepos)
 
   return false
 end
+--
 
--- return[1] name string
--- return[2] isLocal boolean
+-- Поиск имени таблицы, функции,... по адресу
+--
 local function findNameByAddr(addr, __type, linepos, level)
   -- DEBUG
   if not (
@@ -61,22 +55,11 @@ local function findNameByAddr(addr, __type, linepos, level)
       __type == 'userdata'
 
       -- Testing
-      -- __type == 'string' or
-      -- __type == 'number' or
       -- __type == 'cdata'
     )
   then
     return nil, nil
   end
-
-  -- -- Fix for tarantool
-  -- if __type == 'cdata' then
-  --   if box and box.NULL then
-  --     if addr ~= box.NULL then
-  --       return nil, nil
-  --     end
-  --   end
-  -- end
 
   if seenExists(addr, linepos) then
     return seenArg[addr][linepos]
@@ -103,6 +86,7 @@ local function findNameByAddr(addr, __type, linepos, level)
 
   return nil, nil
 end
+--
 
 ---
 -- Output debugging information
@@ -118,119 +102,102 @@ function pimp:debug(...)
 
   -- Get full information about the calling location
   local level = 2
-  local info = debug.getinfo(level)
-
-  -- debug
-  -- write(prettyPrint(info))
-
-  -- local test = ''
-  -- for i = 1, math.huge do
-  --   local info = debug.getinfo(i)
-  --   if not info.name then
-  --     break
-  --   end
-
-  --   test = test .. ' -> ' .. info.name
-  -- end
-
-  -- write(test)
 
   local infunc = ''
   do
-    for debugLevel = level, DEFAULT_MAX_SEEN do
-      local info = debug.getinfo(debugLevel)
+  for debugLevel = level, DEFAULT_MAX_SEEN do
+    local info = debug.getinfo(debugLevel)
 
-      -- Debug
-      -- write(prettyPrint(info))
+    -- Debug
+    -- write(prettyPrint(info))
 
-      if info == nil then
-        break
+    if info == nil then
+      break
+    end
+
+    if info.namewhat ~= '' then
+      local funcName = info.name
+      local funcArgs = ''
+      local visibilityLabel = ''
+
+      if config.pimp.show_visibility then
+        if info.namewhat == 'local' or
+          info.namewhat == 'global'
+        then
+          visibilityLabel = info.namewhat..' '
+        end
       end
 
-      if info.namewhat ~= '' then
-        local funcName = info.name
-        local funcArgs = ''
-        local visibilityLabel = ''
-
-        if config.pimp.show_visibility then
-          if info.namewhat == 'local' or
-            info.namewhat == 'global'
-          then
-              visibilityLabel = info.namewhat..' '
-          end
-        end
-
-        if info.linedefined > 0 then
-          if info.nparams > 0 then
-            -- Get local func args
-            for i = 1, info.nparams do
-              local name, value = debug.getlocal(level, i)
-              if not name and not value then
-                break
-              end
-
-              local __type = type(value)
-              local __mt = getmetatable(value)
-              if __mt then
-                __type = 'metatable'
-              end
-
-              if __type == 'string' then
-                value = tostring(value)
-                value = '['..value:len()..' byte]'
-              elseif
-                __type == 'table'     or
-                __type == 'metatable' or
-                __type == 'userdata'  or
-                __type == 'cdata'     or
-                __type == 'thread'
-              then
-                value = '['..__type..']'
-              else
-                value = tostring(value)
-              end
-
-              funcArgs = funcArgs..name..': '..value
-              if i ~= info.nparams then
-               funcArgs = funcArgs..', '
-              end
+      if info.linedefined > 0 then
+        if info.nparams > 0 then
+          -- Get local func args
+          for i = 1, info.nparams do
+            local name, value = debug.getlocal(level, i)
+            if not name and not value then
+              break
             end
 
-            funcName = funcName..'('..funcArgs
-
-            if info.isvararg then
-              funcName = funcName..', ...'
+            local __type = type(value)
+            local __mt = getmetatable(value)
+            if __mt then
+              __type = 'metatable'
             end
 
-            funcName = funcName..')'
-          else
-            if info.isvararg then
-              funcName = funcName..'(...)'
+            if __type == 'string' then
+              value = tostring(value)
+              value = '['..value:len()..' byte]'
+            elseif
+              __type == 'table'     or
+              __type == 'metatable' or
+              __type == 'userdata'  or
+              __type == 'cdata'     or
+              __type == 'thread'
+            then
+              value = '['..__type..']'
             else
-              funcName = funcName..'(?)'
+              value = tostring(value)
+            end
+
+            funcArgs = funcArgs..name..': '..value
+            if i ~= info.nparams then
+             funcArgs = funcArgs..', '
             end
           end
+
+          funcName = funcName..'('..funcArgs
+
+          if info.isvararg then
+            funcName = funcName..', ...'
+          end
+
+          funcName = funcName..')'
         else
-          funcName = funcName..'(?)'
+          if info.isvararg then
+            funcName = funcName..'(...)'
+          else
+            funcName = funcName..'(?)'
+          end
         end
-
-        infunc = infunc
-          ..(debugLevel == level and 'in ' or '➜ ')
-          ..color(color.scheme.visibility, visibilityLabel)
-          ..color(color.brightMagenta, funcName)..': '
+      else
+        funcName = funcName..'(?)'
       end
 
-      if config.pimp.show_full_functions_stack == false then
-        break
-      end
+      infunc = infunc
+        ..(debugLevel == level and 'in ' or '➜ ')
+        ..color(color.scheme.visibility, visibilityLabel)
+        ..color(color.brightMagenta, funcName)..': '
+    end
+
+    if config.pimp.show_full_functions_stack == false then
+      break
     end
   end
+  end
 
+  local info = debug.getinfo(level)
   local linepos = info.currentline
   local filename = makePath(info)
-
-  -- local filepath = info.source:match('@(.+)')
-  local callpos = filename .. ':' .. linepos
+  local callpos = filename..':'..linepos
 
   -- Parse
   local data = {}
@@ -253,6 +220,7 @@ function pimp:debug(...)
     end
 
     if argType == 'table' then
+      -- Отображение типа метатаблицы
       local __mt_label = ''
       local __mt = getmetatable(value)
       if __mt and config.pimp.show_type then
@@ -278,10 +246,12 @@ function pimp:debug(...)
 
   write(prefix..callpos..delimiter..infunc..result)
 
+  -- Возвращение изначально переданных аргументов
   return ...
 end
 
--- Message
+--- Print simple text
+-- @param text Text
 function pimp.msg(text)
   local level = 2
   local info = debug.getinfo(level)
@@ -358,7 +328,7 @@ end
 --- Disable colour output
 function pimp:disableColor()
   config.pimp.colors = false
-  color:colorise(false)
+  color.colorise(false)
 
   return self
 end
@@ -366,7 +336,7 @@ end
 --- Enable colour output
 function pimp:enableColor()
   config.pimp.colors = true
-  color:colorise(true)
+  color.colorise(true)
 
   return self
 end
@@ -413,30 +383,27 @@ function pimp:disableTableAddr()
   return self
 end
 
----
+--- Enable full functions stack called
 function pimp:enableFullFunctionsStack()
   config.pimp.show_full_functions_stack = true
 
   return self
 end
 
----
+--- Disable full functions stack called
 function pimp:disableFullFunctionsStack()
   config.pimp.show_full_functions_stack = false
 
   return self
 end
 
----
+--- Table pretty print
 function pimp.pp(t)
   prettyPrint:setShowType(config.pimp.show_type)
   prettyPrint:setShowTableAddr(config.pimp.show_table_addr)
   return prettyPrint(t)
 end
 
----
--- Set up the 'debug' function to be called
--- when attempting to invoke the table as a function
 setmetatable(pimp, { __call = pimp.debug })
 
 return pimp

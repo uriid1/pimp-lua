@@ -1,3 +1,5 @@
+--- Объект прототип неопределенного типа
+--
 local color = require('pimp.color')
 
 local Unknown = {}

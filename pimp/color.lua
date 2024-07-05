@@ -1,3 +1,5 @@
+--- Модуль для отображения текста в заданном цвете
+--
 local config = require('pimp.config')
 local colorScheme = require('pimp.colorscheme.default')
 
@@ -19,8 +21,9 @@ color.log = {}
 for name, col in pairs(colorScheme.log) do
   color.log[name] = col
 end
+--
 
-function color:colorise(value)
+function color.colorise(value)
   config.color.use_color = value and true or false
 end
 

@@ -1,5 +1,4 @@
----
--- Logging
+--- Модуль для синхронного логирования
 -- @module log
 --
 local config = require('pimp.config')

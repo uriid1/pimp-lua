@@ -1,3 +1,5 @@
+--- Известные метаметоды используемые по умолчанию
+--
 local metamethods = {
   ["__call"] = true,
   ["__concat"] = true,
@@ -31,8 +33,10 @@ local metamethods = {
   ["__bnot"] = true, -- ~
   ["__shl"] = true, -- <<
   ["__shr"] = true, -- >>
-
   ["__idiv"] = true,
+
+  -- Tarantool
+  ["__serialize"] = true,
 }
 
 return metamethods

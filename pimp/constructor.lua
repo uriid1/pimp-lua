@@ -1,7 +1,5 @@
+--- Type constructor
 --
--- Type constructor
---
--- Classes
 local Number = require('pimp.classes.Number')
 local String = require('pimp.classes.String')
 local Boolean = require('pimp.classes.Boolean')
@@ -13,9 +11,7 @@ local Cdata = require('pimp.classes.Cdata')
 local Nil = require('pimp.classes.Nil')
 local Unknown = require('pimp.classes.Unknown')
 
-local constructor = {}
-
-function constructor:new(argType, value, argName, funcArgs)
+local function constructor(argType, value, argName, funcArgs)
   -- Detect CDATA NULL
   if value and value == nil then
     argType = 'cdata'
@@ -46,7 +42,5 @@ function constructor:new(argType, value, argName, funcArgs)
 
   return obj
 end
-
-setmetatable(constructor, { __call = constructor.new })
 
 return constructor

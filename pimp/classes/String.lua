@@ -1,3 +1,5 @@
+--- Объект прототип string типа
+--
 local color = require('pimp.color')
 local stringFormat = require('pimp.string-format')
 

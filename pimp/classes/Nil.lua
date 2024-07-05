@@ -1,3 +1,5 @@
+--- Объект прототип nil типа
+--
 local color = require('pimp.color')
 
 local Nil = {}

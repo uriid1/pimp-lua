@@ -1,3 +1,5 @@
+--- Объект прототип number типа
+--
 local color = require('pimp.color')
 
 local Number = {}
