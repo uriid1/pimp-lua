@@ -1,4 +1,4 @@
-![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp.png)
+![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp_logo.png)
 
 ## Overview
 Module for pretty-printing tables and text, as well as for simple debugging using Lua's built-in debug methods. The main goal of the module is to replace print with a more advanced tool.
