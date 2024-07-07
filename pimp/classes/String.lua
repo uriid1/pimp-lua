@@ -30,7 +30,7 @@ function String:compile()
   data = data..'"'..self.value..'"'
 
   if self.showType then
-    data = data..': ['..self.length..' byte]'
+    data = data..': ['..color(color.scheme.Number, self.length)..' byte]'
   end
 
   return data

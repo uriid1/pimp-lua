@@ -1,6 +1,5 @@
 --- Модуль для претти принта таблиц и небольшого дебагинга
 -- @module pimp
-
 local config = require('pimp.config')
 local write = require('pimp.write')
 local color = require('pimp.color')
@@ -175,9 +174,12 @@ function pimp:debug(...)
           if info.isvararg then
             funcName = funcName..'(...)'
           else
-            funcName = funcName..'(?)'
+            funcName = funcName..'()'
           end
         end
+      elseif info.nparams == 0 then
+        -- 0 params
+        funcName = funcName..'()'
       else
         funcName = funcName..'(?)'
       end
@@ -192,7 +194,7 @@ function pimp:debug(...)
       break
     end
   end
-  end
+  end -- do
 
   local info = debug.getinfo(level)
   local linepos = info.currentline
@@ -220,18 +222,11 @@ function pimp:debug(...)
     end
 
     if argType == 'table' then
-      -- Отображение типа метатаблицы
-      local __mt_label = ''
-      local __mt = getmetatable(value)
-      if __mt and config.pimp.show_type then
-        __mt_label = ': ['..color(color.scheme.metatable, 'metatable')..']'
-      end
-
       prettyPrint:setShowType(config.pimp.show_type)
       prettyPrint:setShowTableAddr(config.pimp.show_table_addr)
       obj:setShowTableAddr(config.pimp.show_table_addr)
 
-      table.insert(data, visibilityLabel..obj:compile()..prettyPrint(value)..__mt_label)
+      table.insert(data, visibilityLabel..obj:compile()..prettyPrint(value))
     else
       table.insert(data, visibilityLabel..obj:compile())
     end
@@ -327,7 +322,6 @@ end
 
 --- Disable colour output
 function pimp:disableColor()
-  config.pimp.colors = false
   color.colorise(false)
 
   return self
@@ -335,7 +329,6 @@ end
 
 --- Enable colour output
 function pimp:enableColor()
-  config.pimp.colors = true
   color.colorise(true)
 
   return self
@@ -397,11 +390,24 @@ function pimp:disableFullFunctionsStack()
   return self
 end
 
---- Table pretty print
+--- Return table with pretty-print
+-- without config.pimp.output
 function pimp.pp(t)
-  prettyPrint:setShowType(config.pimp.show_type)
-  prettyPrint:setShowTableAddr(config.pimp.show_table_addr)
+  prettyPrint:setShowType(false)
+  prettyPrint:setShowTableAddr(false)
   return prettyPrint(t)
+end
+
+--- Return table with pretty-print
+-- without color and config.pimp.output
+function pimp.ppnc(t)
+  local use_color = config.color.use_color
+  prettyPrint:setShowType(false)
+  prettyPrint:setShowTableAddr(false)
+  color.colorise(false)
+  local data = prettyPrint(t)
+  color.colorise(use_color)
+  return data
 end
 
 setmetatable(pimp, { __call = pimp.debug })

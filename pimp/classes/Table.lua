@@ -25,9 +25,11 @@ function Table:compile()
   if self.varname then
     if self.show_table_addr then
       local adress = color(color.scheme.debugAddress, tostring(self.value))
-      data = data..tostring(self.varname)..': <'..adress..'> = '
+      data = data
+        .. color(color.scheme.tablePrefix, tostring(self.varname))
+        .. ': <'..adress..'> = '
     else
-      data = data..tostring(self.varname)..' = '
+      data = data..color(color.scheme.tablePrefix, tostring(self.varname))..' = '
     end
   end
 

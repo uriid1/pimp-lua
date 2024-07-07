@@ -61,6 +61,10 @@ for i = 1, #models do
   local type = models[i]
 
   log[type] = function(message)
+    if not config.pimp.output then
+      return
+    end
+
     if not findIgnore(type) then
       write(makeLog(type, message)..' '.. message)
     end

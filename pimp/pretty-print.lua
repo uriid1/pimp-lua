@@ -9,8 +9,7 @@ local metamethods = require('pimp.enums.metamethods')
 
 local prettyPrint = {}
 
---
-local function isArray(tbl)
+local function isarray(tbl)
   if type(tbl) ~= 'table' then
     return false, nil
   end
@@ -27,23 +26,32 @@ local function isArray(tbl)
   return true, index
 end
 
+local function ismt(t)
+  return getmetatable(t) ~= nil
+end
+
+local function tabletypePrefix(t)
+  return ismt(t)
+    and color(color.scheme.metatable, 'metatable')
+    or color(color.scheme.tablePrefix, 'table')
+end
+
 --- Wrap an object for pretty printing
--- @param obj any The object to be pretty-printed
--- @param indent number The indentation level (optional, default is 0)
--- @param seen table A table to keep track of visited objects (optional)
--- @return string The pretty-printed string
+-- obj - any The object to be pretty-printed
+-- indent - number The indentation level
+-- seen - table A table to keep track of visited objects
 function prettyPrint:wrap(obj, indent, seen)
-  local __type = type(obj)
+  local _type = type(obj)
   indent = indent or 0
   seen = seen or {}
 
-  if __type == 'nil' then
+  if _type == 'nil' then
     return constructor('nil', obj)
-           :setShowType(config.pretty_print.show_type)
-           :compile()
+      :setShowType(config.pretty_print.show_type)
+      :compile()
   end
 
-  if __type == 'table' then
+  if _type == 'table' then
     -- Check if we've already seen this table
     if seen[obj] then
       local address = tostring(obj)
@@ -56,10 +64,14 @@ function prettyPrint:wrap(obj, indent, seen)
 
     -- Detect empty table
     if not next(obj) then
+      -- Print table type
+      if config.pretty_print.show_type then
+        return color(color.scheme.emtyTable, ('{}: [%s]'):format(tabletypePrefix(obj)))
+      end
       return color(color.scheme.emtyTable, '{}')
     end
 
-    local __result = color(color.scheme.tableBrackets, '{\n')
+    local _result = color(color.scheme.tableBrackets, '{\n')
     for key, val in pairs(obj) do
       local key_type = type(key)
 
@@ -67,13 +79,13 @@ function prettyPrint:wrap(obj, indent, seen)
       local valIsTable = type(val) == 'table'
 
       -- Detect if key is number
-      local __field_type
+      local fieldType
       if key_type == 'string' and tonumber(key) then
-        __field_type = '["%s"]'
+        fieldType = '["%s"]'
       elseif key_type == 'number' then
-        __field_type = '[%s]'
+        fieldType = '[%s]'
       else
-        __field_type = '%s'
+        fieldType = '%s'
       end
 
       -- Field color
@@ -85,19 +97,19 @@ function prettyPrint:wrap(obj, indent, seen)
 
       if config.pretty_print.show_table_addr and valIsTable then
         local fmt_str = '%s'
-          .. __field_type
+          .. fieldType
           ..': <' .. color(color.scheme.debugAddress, '%s') .. '> = '
 
-        __result = __result
+        _result = _result
           .. fmt_str:format(
               string.rep(config.pretty_print.tab_char, indent + 2), -- Space
               color(fieldColor, key), -- Field name
               tostring(val) -- Table address
             )
       else
-        local fmt_str = '%s'..__field_type..' = '
+        local fmt_str = '%s'..fieldType..' = '
 
-        __result = __result
+        _result = _result
           .. fmt_str:format(
               string.rep(config.pretty_print.tab_char, indent + 2), -- Space
               color(fieldColor, key) -- Field name
@@ -112,27 +124,29 @@ function prettyPrint:wrap(obj, indent, seen)
         error = '<'..color(color.scheme.error, 'error: '..tostring(error))..'>'
       end
 
-      __result = __result..error..',\n'
+      _result = _result..error..',\n'
     end
 
     local labelType = ''
-    local isArr, arrCount = isArray(obj)
-
-    if isArr and config.pretty_print.show_type then
-      labelType = labelType..': [array '..arrCount..']'
+    if config.pretty_print.show_type then
+      local isArr, arrCount = isarray(obj)
+      if isArr then
+        labelType = labelType..': [array '..color(color.scheme.Number, arrCount)..']'
+      end
+      labelType = labelType..(': [%s]'):format(tabletypePrefix(obj))
     end
 
-    __result = __result
+    _result = _result
       .. string.rep(config.pretty_print.tab_char, indent)
       .. color(color.scheme.tableBrackets, '}')
       .. labelType
 
-    return __result
-  end
+    return _result
+  end -- if table
 
-  return constructor(__type, obj)
-         :setShowType(config.pretty_print.show_type)
-         :compile()
+  return constructor(_type, obj)
+    :setShowType(config.pretty_print.show_type)
+    :compile()
 end
 
 function prettyPrint:setShowType(val)
