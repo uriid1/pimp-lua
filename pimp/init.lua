@@ -127,8 +127,8 @@ function pimp:debug(...)
         end
       end
 
-      if info.linedefined > 0 then
-        if info.nparams > 0 then
+      if info.linedefined and info.linedefined > 0 then
+        if info.nparams and info.nparams > 0 then
           -- Get local func args
           for i = 1, info.nparams do
             local name, value = debug.getlocal(level, i)

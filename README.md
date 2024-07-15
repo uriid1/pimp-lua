@@ -5,6 +5,18 @@ Module for pretty-printing tables and text, as well as for simple debugging usin
 
 ![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/screenshot.png)
 
+## Installing
+```bash
+luarocks install pimp
+```
+If you are using a non-Unix-like operating system, the module probably won't be able to print text in color.
+
+Please use:
+```lua
+local p = require('pimp)
+p:disableColor()
+```
+
 ## Inspect Variables
 ```lua
 p('Pimp Module!')
