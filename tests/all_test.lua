@@ -110,7 +110,11 @@ setmetatable(t1, {
 })
 
 local t2 = {1, 2, 3}
-setmetatable(t2, { __tostring = function() end })
+setmetatable(t2, {
+  __tostring = function()
+    return 999
+  end
+})
 
 p(getmetatable(t1))
 
@@ -129,12 +133,12 @@ local arrTest = {
 }
 p(arrTest)
 
-local strArr = {
-  ["1"] = 1,
-  ["2"] = 2,
-  ["3"] = 3,
+local realArr = {
+  [1] = 100,
+  [2] = 200,
+  [3] = 300,
 }
-p(strArr)
+p(realArr)
 
 local table_name = {
   message = {
@@ -150,7 +154,7 @@ local table_name = {
   inf = 1/0,
   nan = 0/0,
   boolean = true,
-  string = '\tHello,\r\nworld!\r\n $(.-)^',
+  string = '^\t(Hello)%.[\r\n]world!\r\n$',
   func = function() end,
   thread = coroutine.create(function() end),
   empty_table = {},

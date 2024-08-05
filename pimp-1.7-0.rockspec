@@ -6,7 +6,7 @@ source = {
 }
 
 description = {
-  summary = "Module for Lua pretty print and debugging ",
+  summary = "Module for Lua pretty print and debugging",
   detailed = [[
     Module for pretty-printing tables and text, as well as for simple debugging using Lua's built-in debug methods. The main goal of the module is to replace print with a more advanced tool.
   ]],

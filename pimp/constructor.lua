@@ -11,7 +11,7 @@ local Cdata = require('pimp.classes.Cdata')
 local Nil = require('pimp.classes.Nil')
 local Unknown = require('pimp.classes.Unknown')
 
-local function constructor(argType, value, argName, funcArgs)
+local function constructor(argType, value, argName)
   -- Detect CDATA NULL
   if value and value == nil then
     argType = 'cdata'
@@ -25,7 +25,7 @@ local function constructor(argType, value, argName, funcArgs)
   elseif argType == 'string' then
     obj = String(argName, value)
   elseif argType == 'function' then
-    obj = Function(argName, value, funcArgs)
+    obj = Function(argName, value)
   elseif argType == 'table' then
     obj = Table(argName, value)
   elseif argType == 'thread' then

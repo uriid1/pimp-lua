@@ -1,23 +1,28 @@
 ![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp_logo.png)
 
-## Overview
-Module for pretty-printing tables and text, as well as for simple debugging using Lua's built-in debug methods. The main goal of the module is to replace print with a more advanced tool.
+Russian | [English](README_EN.md)</br>
+На текущий момент, наиболее полная документация доступна только на русском языке.
+
+## Pimp
+Модуль предназначен для красивой печати всех lua-типов, в особенности таблиц. А так же служит для простой отладки с использованием встроенной lua библиотеки debug.
+Основная цель модуля — заменить print более совершенным инструментом.</br>
+Создан вдохновившись icecream в python.
 
 ![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/screenshot.png)
 
-## Installing
+## Установка
 ```bash
 luarocks install pimp
 ```
-If you are using a non-Unix-like operating system, the module probably won't be able to print text in color.
 
-Please use:
-```lua
-local p = require('pimp)
-p:disableColor()
-```
+## Особенности lua и скорость работы модуля
+1. В lua нет возможности получить простым путем имя какой-либо переменной из стейта.
+Поэтому имена переменных, приходится буквально искать по значению или адресу.
+В случае с таблицами, coroutine, функциями и userdata чаще всего нет проблем найти имя переменной, так как у этих типов есть адрес. С локальными переменными всё намного сложнее, получить имя по значению можно, но если будут апвелью или в локальном стейте переменные с таким же значением, нельзя гарантировать, что конкретное имя переменной будет соответствует конкретному значению. Поэтому по умолчанию в модуле отключен поиск имён локальных переменных, но вы можете включить этот режим, используя метод - `pimp:enableFindLocalName()`
 
-## Inspect Variables
+2. Модуль предназначен для тестирования и отладки кода, он значительно замедляет вашу программу, поэтому используйте его по назначению. А что бы не пришлось каждый раз удалять методы модуля из кода, существует возможность отключить работу pimp - pimp:disable(). И так же включить - pimp:enable().
+
+## Инспектирование lua-типов
 ```lua
 p('Pimp Module!')
 p(true, false, nil)
@@ -37,7 +42,7 @@ if box then
 end
 ```
 
-## Inspect Tables
+## Инспектирование таблиц
 ```lua
 local table_name = p({
   name = "John",
@@ -46,7 +51,7 @@ local table_name = p({
 })
 ```
 
-## Inspect Functions
+## Инспектирование функций
 ```lua
 local function sum(a, b)
   p(a, b)
@@ -56,7 +61,7 @@ end
 local result_sum = p(sum(10, 5))
 ```
 
-**Disable or Enable output**
+**Включение и отключение вывода*
 ```lua
 p:disable()
 p('Hello')
@@ -65,7 +70,7 @@ p:enable()
 p('World')
 ```
 
-**Change prefix**
+**Смена префикса**
 ```lua
 p:setPrefix({ prefix = 'INFO', sep = '|-> ' })
 p('Wow! It\'s new prefix!')
@@ -75,7 +80,7 @@ p:resetPrefix()
 INFO|-> file.lua:2: 'Wow! It's new preffix!': [length 22]
 ```
 
-**logging**
+**Логирование**
 ```lua
 p.log.trace('Trace message')
 p.log.debug('Debug message')
@@ -85,12 +90,12 @@ p.log.error('Error message')
 p.log.fatal('Fatal message')
 ```
 
-Extensive configuration </br>
+Все методы для настройки </br>
 ```lua
 p:resetPrefix()
 p:disable()
 p:enable()
-p:matchPath(str)
+p:matchPath(re_str)
 p:disableFullPath()
 p:enableFullPath()
 p:disableColor()
@@ -104,4 +109,7 @@ p:disableTableAddr()
 p:enableFullFunctionsStack()
 p:disableFullFunctionsStack()
 p.pp(t)
+p:getLocalEnv(level)
+p:enableFindLocalName()
+p:disableFindLocalName()
 ```

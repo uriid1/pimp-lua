@@ -1,5 +1,4 @@
----
--- Table Printing Module
+--- Table Printing Module
 -- @module pretty-print
 --
 local config = require('pimp.config')
@@ -9,7 +8,7 @@ local metamethods = require('pimp.enums.metamethods')
 
 local prettyPrint = {}
 
-local function isarray(tbl)
+local function isArray(tbl)
   if type(tbl) ~= 'table' then
     return false, nil
   end
@@ -129,7 +128,7 @@ function prettyPrint:wrap(obj, indent, seen)
 
     local labelType = ''
     if config.pretty_print.show_type then
-      local isArr, arrCount = isarray(obj)
+      local isArr, arrCount = isArray(obj)
       if isArr then
         labelType = labelType..': [array '..color(color.scheme.Number, arrCount)..']'
       end

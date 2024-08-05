@@ -5,11 +5,10 @@ local color = require('pimp.color')
 local Function = {}
 Function.__index = Function
 
-function Function:new(varname, value, args)
+function Function:new(varname, value)
   local obj = {}
   obj.type = 'function'
   obj.varname = varname
-  obj.args = args
   obj.value = value
   obj.showType = true
   obj.colorise = true
