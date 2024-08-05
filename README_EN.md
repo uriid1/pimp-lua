@@ -1,6 +1,7 @@
 ![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp_logo.png)
 
-[Russian](README.md) | English
+[Russian](README.md) | English</br>
+Support lua5.4 and luajit
 
 ## Overview
 Module for pretty-printing tables and text, as well as for simple debugging using Lua's built-in debug methods. The main goal of the module is to replace print with a more advanced tool.
@@ -99,4 +100,8 @@ p:disableTableAddr()
 p:enableFullFunctionsStack()
 p:disableFullFunctionsStack()
 p.pp(t)
+p:enableFindLocalName()
+p:disableFindLocalName()
+p:enableCallStackLadder()
+p:disableCallStackLadder()
 ```

@@ -18,6 +18,8 @@ local config = {
     show_type = false,
     show_table_addr = false,
     show_full_call_stack = true,
+    -- Отображение лесенкой вывода вызываемых функций
+    show_call_stack_ladder = true,
     -- Экспериментальные флаги
     --
     -- Флаг отвечает за поиск локальных переменных -
@@ -37,7 +39,7 @@ local config = {
     find_local_name = false,
   },
 
-  -- Параметры претти печати таблиц
+  -- Параметры красивой-печати таблиц
   pretty_print = {
     -- Символ отступов
     tab_char = ' ',

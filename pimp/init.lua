@@ -197,11 +197,22 @@ local function getCallStack(level)
   -- Восстановление последовательности вызова
   -- исключая вызов pimp
   local result = ''
-  for i = #stack, 2, -1 do
-    if i == 2 then
-      result = result .. stack[i]
-    else
-      result = result .. stack[i] .. pimp.separator
+  if config.pimp.show_call_stack_ladder == false then
+    for i = #stack, 2, -1 do
+      if i == 2 then
+        result = result .. stack[i]
+      else
+        result = result .. stack[i] .. pimp.separator
+      end
+    end
+  else
+    result = ''
+    for i = #stack, 2, -1 do
+      if i == 2 then
+        result = result .. string.rep('  ', #stack - i) .. stack[i]
+      else
+        result = result .. string.rep('  ', #stack - i) .. stack[i] .. pimp.separator..'\n'
+      end
     end
   end
 
@@ -252,7 +263,7 @@ function pimp:debug(...)
   write(
     prefix
     .. callpos  .. ': '
-    .. (stackStr == '' and '' or ': ')
+    .. (stackStr == '' and '' or stackStr..': ')
     .. result
   )
 
@@ -437,6 +448,18 @@ end
 
 function pimp:disableFindLocalName()
   config.pimp.find_local_name = true
+
+  return self
+end
+
+function pimp:enableCallStackLadder()
+  config.pimp.show_call_stack_ladder = true
+
+  return self
+end
+
+function pimp:disableCallStackLadder()
+  config.pimp.show_call_stack_ladder = false
 
   return self
 end
