@@ -1,5 +1,5 @@
 package = "pimp"
-version = "1.7-0"
+version = "2.0-0"
 
 source = {
   url = "git+https://github.com/uriid1/pimp-lua.git",
@@ -16,7 +16,6 @@ description = {
 
 dependencies = {
  "lua >= 5.1",
- "luafilesystem >= 1.8.0",
 }
 
 build = {

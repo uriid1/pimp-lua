@@ -24,22 +24,6 @@ local pimp = {
   color = color,
 }
 
-local function getLocalEnv(level)
-  level = level or 2
-  local i = 1
-  local env = {}
-  while true do
-    local name, value = getlocal(level, i)
-    if not name then
-      break
-    end
-    env[name] = value
-    i = i + 1
-  end
-
-  return env
-end
-
 -- Поиск имени переменной, по её значению
 --
 local function findVarName(value, level)
@@ -311,14 +295,28 @@ end
 
 --- Enable debug output
 function pimp:disable()
-  config.pimp.output = false
+  if config.pimp.global_disable then
+    return self
+  end
 
+  config.pimp.output = false
   return self
 end
 
 --- Disable debug output
 function pimp:enable()
+  if config.pimp.global_disable then
+    return self
+  end
+
   config.pimp.output = true
+  return self
+end
+
+--
+function pimp:globalDisable()
+  config.pimp.global_disable = true
+  config.pimp.output = false
 
   return self
 end
@@ -436,7 +434,22 @@ function pimp.ppnc(t)
   return data
 end
 
-pimp.getLocalEnv = getLocalEnv
+--
+function pimp.getLocalEnv(level)
+  level = level or 2
+  local i = 1
+  local env = {}
+  while true do
+    local name, value = getlocal(level, i)
+    if not name then
+      break
+    end
+    env[name] = value
+    i = i + 1
+  end
+
+  return env
+end
 
 -- Experimental
 --
