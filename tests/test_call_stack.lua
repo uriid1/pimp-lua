@@ -4,17 +4,20 @@ local p = require('pimp')
   :enableVisibility()
   :enableCallStackLadder()
 
-local test_1 = function(arg1)
-  local test_2 = function(arg2)
-    local test_3 = function(arg3)
-      local test_4 = function(arg4
-        )
+local test_1 = function(arg)
+  arg = arg + 1
+  local test_2 = function(arg)
+    arg = arg + 1
+    local test_3 = function(arg)
+      arg = arg + 1
+      local test_4 = function(arg)
         p('Stack test')
       end
-      test_4()
+      test_4(arg)
     end
-    test_3()
+    test_3(arg)
   end
-  test_2()
+  test_2(arg)
 end
 
+test_1(0)

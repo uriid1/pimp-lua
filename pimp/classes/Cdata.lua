@@ -1,5 +1,4 @@
---- Объект прототип cdata типа
---
+-- Объект прототип cdata типа
 local color = require('pimp.color')
 
 local Cdata = {}

@@ -358,6 +358,20 @@ function pimp:enableColor()
   return self
 end
 
+---
+function pimp:enableEscapeNonAscii()
+  config.string_format.escape_non_ascii = true
+
+  return self
+end
+
+---
+function pimp:disableEscapeNonAscii()
+  config.string_format.escape_non_ascii = false
+
+  return self
+end
+
 --- Enable Visibility
 function pimp:enableVisibility()
   config.pimp.show_visibility = true

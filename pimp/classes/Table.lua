@@ -1,5 +1,4 @@
---- Объект прототип table типа
---
+-- Объект прототип table типа
 local color = require('pimp.color')
 
 local Table = {}

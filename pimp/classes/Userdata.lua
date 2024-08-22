@@ -1,5 +1,4 @@
---- Объект прототип userdata типа
---
+-- Объект прототип userdata типа
 local color = require('pimp.color')
 
 local Userdata = {}

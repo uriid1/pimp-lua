@@ -1,7 +1,7 @@
 local config = require('pimp.config')
 local color = require('pimp.color')
 
-local escape = {
+local magics = {
   ['-'] = true,
   ['%'] = true,
   ['('] = true,
@@ -14,6 +14,31 @@ local escape = {
   [']'] = true,
   ['^'] = true,
   ['$'] = true,
+}
+
+local patterns = {
+  [65] = 'A',
+  [66] = 'B',
+  [67] = 'C',
+  [68] = 'D',
+  [70] = 'F',
+  [71] = 'G',
+  [76] = 'L',
+  [80] = 'P',
+  [83] = 'S',
+  [85] = 'U',
+  [87] = 'W',
+  [97] = 'a',
+  [98] = 'b',
+  [99] = 'c',
+  [100] = 'd',
+  [102] = 'f',
+  [103] = 'g',
+  [108] = 'l',
+  [112] = 'p',
+  [115] = 's',
+  [117] = 'u',
+  [119] = 'w',
 }
 
 local special = {
@@ -31,43 +56,92 @@ for i = 0, 31 do
   local c = special[i]
   if not c then
     if i < 10 then
-      c = "00" .. tostring(i)
+      c = '00' .. tostring(i)
     else
-      c = "0" .. tostring(i)
+      c = '0' .. tostring(i)
     end
   end
 
   controls[i] = tostring('\\' .. c)
 end
 
-local function string_format(str)
-  if config.string_format.escape_controls then
-    controls[92] = tostring('\\\\')
-    controls[34] = tostring('\\"')
-    controls[39] = tostring("\\'")
-  else
-    controls[92] = nil
-    controls[34] = nil
-    controls[39] = nil
+-- 127 DEL
+controls[127] = tostring('\\127')
+-- 34 "
+controls[34] = tostring('\\"')
+
+local function escape_colorize(char, colorize)
+  local result = ''
+  if colorize then
+    result = result .. (config.color.use_color and color.reset or '')
+    result = result .. color(color.scheme.controls, char)
+    result = result .. (config.color.use_color and color.scheme.String or '')
+    return result
   end
 
-  local result = (config.color.use_color and color.scheme.String or '')
-  for char in string.gmatch(str, '.') do
-    local byte = string.byte(char, 1)
-    if controls[byte] then
-      result = result .. (config.color.use_color and color.reset or '')
-      result = result .. color(color.scheme.controls, controls[byte])
-      result = result .. (config.color.use_color and color.scheme.String or '')
-    else
-      if config.color.use_color then
-        if config.string_format.escape_colorize and escape[char] then
-          char = color.scheme.escape..char..color.reset..color.scheme.String
-        end
+  return char
+end
+
+local function pattern_colorize(str, cur_pos, char, colorize)
+  if colorize then
+    local result = ''
+
+    -- Поиск паттернов
+    -- %w, %a, ...
+    local prev_byte = string.byte(str, cur_pos-1)
+    local cur_byte = string.byte(str, cur_pos)
+    -- 37 %
+    if prev_byte == 37 then
+      if patterns[cur_byte] then
+        result = result .. (config.color.use_color and color.reset or '')
+        result = result .. color(color.scheme.pattern, char)
+        result = result .. (config.color.use_color and color.scheme.String or '')
+        return result
+      end
+    end
+
+    local next_byte = string.byte(str, cur_pos+1)
+    if magics[char] then
+      local color_type = color.scheme.magic
+      -- 37 %
+      if cur_byte == 37 and patterns[next_byte] then
+        color_type = color.scheme.pattern
       end
 
-      result = result .. char
+      result = result .. (config.color.use_color and color.reset or '')
+      result = result .. color(color_type, char)
+      result = result .. (config.color.use_color and color.scheme.String or '')
+      return result
     end
   end
+
+  return char
+end
+
+local function string_format(str)
+  local result = (config.color.use_color and color.scheme.String or '')
+  for i = 1, #str do
+    local char = string.sub(str, i, i)
+    local byte = string.byte(char, 1)
+
+    -- Экранирование спец.символов
+    if config.string_format.escape_controls then
+      if byte < 128 then
+        if controls[byte] then
+          result = result .. escape_colorize(controls[byte], config.string_format.escape_colorize)
+        else
+          result = result .. pattern_colorize(str, i, char, config.string_format.patterns_colorize)
+        end
+      elseif byte < 256 then
+        if config.string_format.escape_non_ascii then
+          result = result .. escape_colorize('\\'..byte, true)
+        else
+          result = result .. char
+        end
+      end
+    end
+  end
+
   result = result .. (config.color.use_color and color.reset or '')
 
   return result

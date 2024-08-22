@@ -1,12 +1,10 @@
---- Модуль для отображения текста в заданном цвете
---
+-- Модуль для отображения текста в заданном цвете
 local config = require('pimp.config')
 local colorScheme = require('pimp.colorscheme.default')
 
 local color = {}
-config.color.use_color = true
 
--- Adding colors from colorscheme
+-- Добавление цветов из цветовой схемы
 --
 for name, col in pairs(colorScheme.color) do
   color[name] = col

@@ -1,5 +1,4 @@
---- Type constructor
---
+-- Конструктор типов
 local Number = require('pimp.classes.Number')
 local String = require('pimp.classes.String')
 local Boolean = require('pimp.classes.Boolean')
@@ -12,7 +11,7 @@ local Nil = require('pimp.classes.Nil')
 local Unknown = require('pimp.classes.Unknown')
 
 local function constructor(argType, value, argName)
-  -- Detect CDATA NULL
+  -- Если это cdata NULL
   if value and value == nil then
     argType = 'cdata'
   end

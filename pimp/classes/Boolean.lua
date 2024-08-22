@@ -1,5 +1,4 @@
---- Объект прототип boolean типа
---
+-- Объект прототип boolean типа
 local color = require('pimp.color')
 
 local Boolean = {}

@@ -1,5 +1,4 @@
---- Конфигурационный файл модуля
---
+-- Конфигурационный файл модуля
 local config = {
   -- Основные параметры
   pimp = {
@@ -54,9 +53,13 @@ local config = {
   -- Строковые параметры
   string_format = {
     -- Экранировать escape последовательность
-    escape_controls = false,
+    escape_controls = true,
+    -- Экранирование всех не ASCII символов
+    escape_non_ascii = false,
     -- Отображать escape в цвете, заданной темой
     escape_colorize = true,
+    -- Классы lua в цвет
+    patterns_colorize = true,
   },
 
   -- Параметры синхронного логирования
@@ -64,7 +67,7 @@ local config = {
     -- Выходной файл
     outfile = 'log.txt',
     -- Логировать с учетом цвета
-    usecolor = false,
+    use_color = false,
     -- Игнорировать определенные методы логирования
     ignore = {},
     --

@@ -166,6 +166,7 @@ local table_name = {
   nan = 0/0,
   boolean = true,
   string = '^\t(Hello)%.[\r\n]world!\r\n$',
+  pattern = '^([a-z0-9]+)@([%w%d]+)$',
   func = function() end,
   thread = coroutine.create(function() end),
   empty_table = {},

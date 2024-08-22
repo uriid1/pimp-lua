@@ -1,6 +1,4 @@
---- Table Printing Module
--- @module pretty-print
---
+-- Table Printing Module
 local config = require('pimp.config')
 local color = require('pimp.color')
 local constructor = require('pimp.constructor')

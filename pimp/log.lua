@@ -1,6 +1,4 @@
---- Модуль для синхронного логирования
--- @module log
---
+-- Модуль для синхронного логирования
 local config = require('pimp.config')
 local color = require('pimp.color')
 local write = require('pimp.write')
@@ -37,7 +35,7 @@ local function makeLog(logType, message)
   local colorFormat = color(color.log[logType], logFormat)
   local filePos = path..':'..info.currentline..': '
 
-  if config.log.usecolor then
+  if config.log.use_color then
     writeLog(colorFormat..filePos..message..'\n')
   else
     writeLog(logFormat..filePos..message..'\n')
