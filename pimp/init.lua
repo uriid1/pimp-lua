@@ -175,7 +175,7 @@ local function getCallStack(level)
 
   -- Возвращается только функция, из которой произошел вызов
   if config.pimp.show_full_call_stack == false then
-    return stack[2]
+    return stack[2] or ''
   end
 
   -- Восстановление последовательности вызова
