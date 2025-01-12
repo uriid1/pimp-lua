@@ -11,6 +11,7 @@ local test_1 = function(arg)
     local test_3 = function(arg)
       arg = arg + 1
       local test_4 = function(arg)
+        arg = arg + 1
         p('Stack test')
       end
       test_4(arg)

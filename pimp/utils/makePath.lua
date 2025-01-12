@@ -1,7 +1,7 @@
 local config = require('pimp.config')
 
 local function makePath(info)
-  local filename = info.short_src
+  local filename = info and info.short_src or ''
 
   if config.pimp.full_path == false then
     filename = filename:match('.+/(.-)$')

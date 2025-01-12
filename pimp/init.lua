@@ -78,9 +78,11 @@ local function findVarName(value, level)
 
   -- Поиск в окружении
   local env = getfenv and getfenv(level) or _ENV or _G
-  for name, val in pairs(env) do
-    if val == value then
-      return name, isLocal
+  if env ~= nil then
+    for name, val in pairs(env) do
+      if val == value then
+        return name, isLocal
+      end
     end
   end
 
@@ -210,6 +212,10 @@ function pimp:debug(...)
 
   local level = 2
   local info = getinfo(level, 'lS')
+  if info == nil then
+    level = 1
+    info = getinfo(level, 'lS')
+  end
   local callpos = makePath(info)..':'..info.currentline
   local prefix = self.prefix..self.separator
 
