@@ -4,6 +4,8 @@ local color = require('pimp.color')
 local constructor = require('pimp.constructor')
 local metamethods = require('pimp.enums.metamethods')
 
+local DEFAULT_MAX_SEEN = config.pimp.max_seen
+
 local prettyPrint = {}
 
 local function isArray(tbl)
@@ -37,10 +39,11 @@ end
 -- obj - any The object to be pretty-printed
 -- indent - number The indentation level
 -- seen - table A table to keep track of visited objects
-function prettyPrint:wrap(obj, indent, seen)
+function prettyPrint:wrap(obj, indent, seen, seen_count)
   local _type = type(obj)
   indent = indent or 0
   seen = seen or {}
+  seen_count = seen_count or 0
 
   if _type == 'nil' then
     return constructor('nil', obj)
@@ -70,6 +73,19 @@ function prettyPrint:wrap(obj, indent, seen)
 
     local _result = color(color.scheme.tableBrackets, '{\n')
     for key, val in pairs(obj) do
+      seen_count = seen_count + 1
+
+      if seen_count >= DEFAULT_MAX_SEEN then
+          local error = 'Seen overflow. Elements count: ' .. tostring(#obj)
+
+          _result = _result
+            .. string.rep(config.pretty_print.tab_char, indent + 2)
+            .. '<'..color(color.scheme.error, 'Warning: '..tostring(error))..'>'
+            .. '\n'
+
+        break
+      end
+
       local key_type = type(key)
 
       -- Detect table
@@ -114,7 +130,7 @@ function prettyPrint:wrap(obj, indent, seen)
       end
 
       local success, error = pcall(function()
-        return self:wrap(val, indent + 2, seen)
+        return self:wrap(val, indent + 2, seen, seen_count)
       end)
 
       if not success then

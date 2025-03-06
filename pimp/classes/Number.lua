@@ -1,5 +1,6 @@
 -- Объект прототип number типа
 local color = require('pimp.color')
+local config = require('pimp.config')
 
 local Number = {}
 Number.__index = Number
@@ -24,7 +25,11 @@ function Number:compile()
     data = data..tostring(self.varname)..' = '
   end
 
-  data = data..color(self.color, self.value)
+  if config.pimp.decimal_to_hexadecimal then
+    data = data..color(self.color, string.format('0x%X', self.value))
+  else
+    data = data..color(self.color, self.value)
+  end
 
   if self.showType then
     data = data..': ['..self.type..']'

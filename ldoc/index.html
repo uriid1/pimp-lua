@@ -1,0 +1,800 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="ldoc_new.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>pimp</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>pimp</code></h1>
+<p>Module for pretty-printing tables and debugging utilities</p>
+<p></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#debug">debug (...)</a></td>
+	<td class="summary">Debug function to print values with context information</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#msg">msg (text)</a></td>
+	<td class="summary">Print simple text message with timestamp</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#setPrefix">setPrefix (param)</a></td>
+	<td class="summary">Set prefix and separator</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#resetPrefix">resetPrefix ()</a></td>
+	<td class="summary">Reset prefix and separator to defaults</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disable">disable ()</a></td>
+	<td class="summary">Disable debug output</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enable">enable ()</a></td>
+	<td class="summary">Enable debug output</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#globalDisable">globalDisable ()</a></td>
+	<td class="summary">Globally disable pimp calls</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#matchPath">matchPath (str)</a></td>
+	<td class="summary">Set path matching pattern</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableFullPath">disableFullPath ()</a></td>
+	<td class="summary">Disable full path output</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableFullPath">enableFullPath ()</a></td>
+	<td class="summary">Enable full path output</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableColor">disableColor ()</a></td>
+	<td class="summary">Disable color output</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableColor">enableColor ()</a></td>
+	<td class="summary">Enable color output</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableEscapeNonAscii">enableEscapeNonAscii ()</a></td>
+	<td class="summary">Enable escaping of non-ASCII characters</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableEscapeNonAscii">disableEscapeNonAscii ()</a></td>
+	<td class="summary">Disable escaping of non-ASCII characters</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableVisibility">enableVisibility ()</a></td>
+	<td class="summary">Enable visibility information display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableVisibility">disableVisibility ()</a></td>
+	<td class="summary">Disable visibility information display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableType">enableType ()</a></td>
+	<td class="summary">Enable type information display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableType">disableType ()</a></td>
+	<td class="summary">Disable type information display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableTableAddr">enableTableAddr ()</a></td>
+	<td class="summary">Enable table address display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableTableAddr">disableTableAddr ()</a></td>
+	<td class="summary">Disable table address display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableFullCallStack">enableFullCallStack ()</a></td>
+	<td class="summary">Enable full call stack display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableFullCallStack">disableFullCallStack ()</a></td>
+	<td class="summary">Disable full call stack display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#pp">pp (t)</a></td>
+	<td class="summary">Return table with pretty-print without respecting output config</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ppnc">ppnc (t)</a></td>
+	<td class="summary">Return table with pretty-print without color and output config</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getLocalEnv">getLocalEnv (level)</a></td>
+	<td class="summary">Get local environment variables</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableFindLocalName">enableFindLocalName ()</a></td>
+	<td class="summary">Enable finding local variable names</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableFindLocalName">disableFindLocalName ()</a></td>
+	<td class="summary">Disable finding local variable names</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#enableCallStackLadder">enableCallStackLadder ()</a></td>
+	<td class="summary">Enable call stack ladder display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#disableCallStackLadder">disableCallStackLadder ()</a></td>
+	<td class="summary">Disable call stack ladder display</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#decimalToHexadecimal">decimalToHexadecimal ()</a></td>
+	<td class="summary">Enable decimal to hexadecimal conversion</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "debug"></a>
+    <strong>debug (...)</strong>
+    </dt>
+    <dd>
+    Debug function to print values with context information
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Values to debug
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        The input values (for chaining)
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "msg"></a>
+    <strong>msg (text)</strong>
+    </dt>
+    <dd>
+    Print simple text message with timestamp
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">text</span>
+         Text to print
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "setPrefix"></a>
+    <strong>setPrefix (param)</strong>
+    </dt>
+    <dd>
+    Set prefix and separator
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">param</span>
+         Table with prefix and separator { prefix='cool', sep='->' }
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "resetPrefix"></a>
+    <strong>resetPrefix ()</strong>
+    </dt>
+    <dd>
+    Reset prefix and separator to defaults
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disable"></a>
+    <strong>disable ()</strong>
+    </dt>
+    <dd>
+    Disable debug output
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enable"></a>
+    <strong>enable ()</strong>
+    </dt>
+    <dd>
+    Enable debug output
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "globalDisable"></a>
+    <strong>globalDisable ()</strong>
+    </dt>
+    <dd>
+    Globally disable pimp calls
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "matchPath"></a>
+    <strong>matchPath (str)</strong>
+    </dt>
+    <dd>
+    Set path matching pattern
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+         Lua pattern to match paths
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableFullPath"></a>
+    <strong>disableFullPath ()</strong>
+    </dt>
+    <dd>
+    Disable full path output
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableFullPath"></a>
+    <strong>enableFullPath ()</strong>
+    </dt>
+    <dd>
+    Enable full path output
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableColor"></a>
+    <strong>disableColor ()</strong>
+    </dt>
+    <dd>
+    Disable color output
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableColor"></a>
+    <strong>enableColor ()</strong>
+    </dt>
+    <dd>
+    Enable color output
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableEscapeNonAscii"></a>
+    <strong>enableEscapeNonAscii ()</strong>
+    </dt>
+    <dd>
+    Enable escaping of non-ASCII characters
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableEscapeNonAscii"></a>
+    <strong>disableEscapeNonAscii ()</strong>
+    </dt>
+    <dd>
+    Disable escaping of non-ASCII characters
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableVisibility"></a>
+    <strong>enableVisibility ()</strong>
+    </dt>
+    <dd>
+    Enable visibility information display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableVisibility"></a>
+    <strong>disableVisibility ()</strong>
+    </dt>
+    <dd>
+    Disable visibility information display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableType"></a>
+    <strong>enableType ()</strong>
+    </dt>
+    <dd>
+    Enable type information display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableType"></a>
+    <strong>disableType ()</strong>
+    </dt>
+    <dd>
+    Disable type information display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableTableAddr"></a>
+    <strong>enableTableAddr ()</strong>
+    </dt>
+    <dd>
+    Enable table address display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableTableAddr"></a>
+    <strong>disableTableAddr ()</strong>
+    </dt>
+    <dd>
+    Disable table address display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableFullCallStack"></a>
+    <strong>enableFullCallStack ()</strong>
+    </dt>
+    <dd>
+    Enable full call stack display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableFullCallStack"></a>
+    <strong>disableFullCallStack ()</strong>
+    </dt>
+    <dd>
+    Disable full call stack display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "pp"></a>
+    <strong>pp (t)</strong>
+    </dt>
+    <dd>
+    Return table with pretty-print without respecting output config
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         Table to pretty-print
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Pretty-printed string representation
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ppnc"></a>
+    <strong>ppnc (t)</strong>
+    </dt>
+    <dd>
+    Return table with pretty-print without color and output config
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">t</span>
+         Table to pretty-print
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Pretty-printed string representation without color
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getLocalEnv"></a>
+    <strong>getLocalEnv (level)</strong>
+    </dt>
+    <dd>
+    Get local environment variables
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">level</span>
+         Stack level to get locals from
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Table with local variables
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableFindLocalName"></a>
+    <strong>enableFindLocalName ()</strong>
+    </dt>
+    <dd>
+    Enable finding local variable names
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableFindLocalName"></a>
+    <strong>disableFindLocalName ()</strong>
+    </dt>
+    <dd>
+    Disable finding local variable names
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "enableCallStackLadder"></a>
+    <strong>enableCallStackLadder ()</strong>
+    </dt>
+    <dd>
+    Enable call stack ladder display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "disableCallStackLadder"></a>
+    <strong>disableCallStackLadder ()</strong>
+    </dt>
+    <dd>
+    Disable call stack ladder display
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "decimalToHexadecimal"></a>
+    <strong>decimalToHexadecimal ()</strong>
+    </dt>
+    <dd>
+    Enable decimal to hexadecimal conversion
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        self for method chaining
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2025-03-06 16:12:57 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
