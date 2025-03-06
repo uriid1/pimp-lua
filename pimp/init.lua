@@ -53,11 +53,18 @@ local function findVarName(value, level)
   local i = 1
   while true do
     local name, val = getlocal(level, i)
-    if not name then
+    if name == nil then
       break
     end
 
-    if val == value then
+    -- Fix: Compare two cdata in tarantool
+    local _value = value
+    if type(val) == 'cdata' then
+      val = tostring(val)
+      _value = tostring(value)
+    end
+
+    if val == _value then
       table.insert(stack, name)
     end
 
