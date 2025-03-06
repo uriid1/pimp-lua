@@ -1,5 +1,5 @@
 package = "pimp"
-version = "2.0-0"
+version = "2.1-0"
 
 source = {
   url = "git+https://github.com/uriid1/pimp-lua.git"
