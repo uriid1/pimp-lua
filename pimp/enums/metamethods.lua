@@ -1,4 +1,6 @@
 -- Известные метаметоды используемые по умолчанию
+--
+
 local metamethods = {
   ["__call"] = true,
   ["__concat"] = true,

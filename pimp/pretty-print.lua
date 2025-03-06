@@ -1,13 +1,17 @@
--- Table Printing Module
+--- Module for pretty-printing tables with color formatting and cycle detection
+-- @module pretty-print
 local config = require('pimp.config')
 local color = require('pimp.color')
 local constructor = require('pimp.constructor')
 local metamethods = require('pimp.enums.metamethods')
 
+--- Maximum number of table elements to process
 local DEFAULT_MAX_SEEN = config.pimp.max_seen
 
+--- Main module table
 local prettyPrint = {}
 
+--- Check if a table is an array (sequential numeric keys)
 local function isArray(tbl)
   if type(tbl) ~= 'table' then
     return false, nil
@@ -25,10 +29,12 @@ local function isArray(tbl)
   return true, index
 end
 
+--- Check if a value has a metatable
 local function ismt(t)
   return getmetatable(t) ~= nil
 end
 
+--- Get appropriate prefix for table type
 local function tabletypePrefix(t)
   return ismt(t)
     and color(color.scheme.metatable, 'metatable')
@@ -36,9 +42,8 @@ local function tabletypePrefix(t)
 end
 
 --- Wrap an object for pretty printing
--- obj - any The object to be pretty-printed
--- indent - number The indentation level
--- seen - table A table to keep track of visited objects
+-- @param obj Any object to be pretty-printed
+-- @return string Formatted string representation of the object
 function prettyPrint:wrap(obj, indent, seen, seen_count)
   local _type = type(obj)
   indent = indent or 0
@@ -162,18 +167,25 @@ function prettyPrint:wrap(obj, indent, seen, seen_count)
     :compile()
 end
 
+--- Set whether to show type information
+-- @param val Boolean value to enable/disable type display
+-- @return self for method chaining
 function prettyPrint:setShowType(val)
   config.pretty_print.show_type = val and true or false
 
   return self
 end
 
+--- Set whether to show table addresses
+-- @param val Boolean value to enable/disable table address display
+-- @return self for method chaining
 function prettyPrint:setShowTableAddr(val)
   config.pretty_print.show_table_addr = val and true or false
 
   return self
 end
 
+--- Set metatable to make prettyPrint callable as a function
 setmetatable(prettyPrint, {
   __call = prettyPrint.wrap,
 })

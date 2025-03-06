@@ -522,10 +522,12 @@ function pimp:enableFindLocalName()
   return self
 end
 
+--- End section
+
 --- Disable finding local variable names
 -- @return self for method chaining
 function pimp:disableFindLocalName()
-  config.pimp.find_local_name = false  -- Fixed: was incorrectly set to true
+  config.pimp.find_local_name = false
 
   return self
 end

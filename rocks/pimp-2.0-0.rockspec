@@ -3,6 +3,7 @@ version = "2.0-0"
 
 source = {
   url = "git+https://github.com/uriid1/pimp-lua.git",
+  tag = "541c726ad4a943bd5347dd7748958c4a4140b7c4"
 }
 
 description = {
