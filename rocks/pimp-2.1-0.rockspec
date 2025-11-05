@@ -2,7 +2,8 @@ package = "pimp"
 version = "2.1-0"
 
 source = {
-  url = "git+https://github.com/uriid1/pimp-lua.git"
+  url = "git+https://github.com/uriid1/pimp-lua.git",
+  tag = "v2.1.0"
 }
 
 description = {

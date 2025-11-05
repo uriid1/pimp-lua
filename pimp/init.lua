@@ -92,7 +92,15 @@ local function findVarName(value, level)
   end
 
   -- Search in environment
-  local env = getfenv and getfenv(level) or _ENV or _G
+  local env = nil
+
+  if getfenv then
+    env = getfenv(level)
+  elseif _ENV then
+    env = _ENV
+  elseif _G then
+    env = _G
+  end
 
   if env ~= nil then
     for name, val in pairs(env) do
@@ -215,9 +223,25 @@ local function getCallStack(level)
     result = ''
     for i = #stack, 2, -1 do
       if i == 2 then
-        result = result .. string.rep('  ', #stack - i) .. stack[i]
+        result = result
+          .. string.rep(' ', #stack - i)
+          .. ('(%d) ↳ '):format(#stack - i+1)
+          .. stack[i]
+      elseif i == #stack then
+        -- p -> foo/bar.lua:1: [stack count: numer]
+        -- (1) ↳ local bar(arg: 0) ➜
+        result = result
+          .. ('[stack count: %d]'):format(#stack)
+          .. string.rep(' ', #stack - i)
+          .. ('\n(%d) ↳ '):format(#stack - i+1)
+          .. stack[i] .. pimp.separator
+          .. '\n'
       else
-        result = result .. string.rep('  ', #stack - i) .. stack[i] .. pimp.separator..'\n'
+        result = result
+          .. string.rep(' ', #stack - i)
+          .. ('(%d) ↳ '):format(#stack - i+1)
+          .. stack[i] .. pimp.separator
+          .. '\n'
       end
     end
   end
