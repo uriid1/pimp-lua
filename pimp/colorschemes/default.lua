@@ -1,6 +1,6 @@
+---
 -- Основная цветовая тема (используется 256-цветовая палитра)
 --
-
 local color = {
   reset ="\27[0m",
   black = "\27[38;5;0m",
@@ -46,33 +46,26 @@ local scheme = {
   Thread = color.brightBlue,
   Userdata = color.brightBlue,
   Unknown = color.red,
-  tablePrefix = color.brightYellow,
+  nested_table = color.brightCyan,
+  table_field = color.lightYellow,
+  table_prefix = color.brightYellow,
   metatable = color.brightCyan,
-  cycleTable = color.red,
+  circular = color.red,
   address = color.red,
-  debugAddress = color.brightYellow,
-  tableBrackets = color.whiite,
-  emtyTable = color.white,
-  tableField = color.lightYellow,
+  debug_address = color.brightYellow,
+  brackets = color.white,
+  depth = color.yellow,
+  emty_table = color.white,
   visibility = color.blue,
   controls = color.magenta,
   escape = "\27[38;5;207m",
   pattern = "\27[38;5;219m",
   magic = "\27[38;5;229m",
   error = color.red,
-}
-
-local log = {
-  trace = color.cyan,
-  debug = color.brightBlue,
-  info = color.green,
-  warn = color.yellow,
-  error = color.brightRed,
-  fatal = color.red,
+  date = color.lightGreen,
 }
 
 return {
   color = color,
-  scheme = scheme,
-  log = log,
+  scheme = scheme
 }
