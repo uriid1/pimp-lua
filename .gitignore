@@ -1,2 +1,4 @@
 log.txt
 test/log.txt
+bin/sync-ldoc
+lua-doc/

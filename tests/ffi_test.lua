@@ -1,4 +1,4 @@
-local p = require('pimp')
+local p = require('pimp.init')
 :enableType()
 :enableTableAddr()
 :enableVisibility()

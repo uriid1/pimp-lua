@@ -1,2 +1,2 @@
-local moodule = require('main_mod.init')
-moodule()
+local mainMod = require('main_mod.init')
+mainMod()

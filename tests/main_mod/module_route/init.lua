@@ -1,6 +1,7 @@
-local p = require('pimp')
+--- Demo route module.
+local p = require('pimp.init')
 
-function route (res)
+local function route(res)
   p(res)
 end
 

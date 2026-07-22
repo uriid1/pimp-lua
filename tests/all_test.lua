@@ -100,7 +100,7 @@ local function tt(t1, t2, t3)
   p:enableVisibility()
 end
 
-tt(t1, t2, {})
+tt(nil, nil, {})
 
 local t1 = {}
 setmetatable(t1, {
@@ -128,6 +128,7 @@ test_1('foo', p(test_1), p(test_2, test_2), 'baz', p(test_3))
 --
 -- Inspect local variables
 --
+-- luacheck: ignore arg (the argument is read through getLocalEnv)
 local function test_get_local_env(arg)
   local name = 'uriid1'
   local age = 12
@@ -183,14 +184,3 @@ if box and box.tuple then
   local tuple = box.tuple.new {'foo', 'bar', 'baz'}
   p(tuple)
 end
-
---
--- Log
---
-p.log.ignore = {'info', 'warn'}
-p.log.trace(('Trace %s'):format 'message')
-p.log.debug('Debug message')
-p.log.info('Info message')
-p.log.warn('Warn message')
-p.log.error('Error message')
-p.log.fatal('Fatal message')

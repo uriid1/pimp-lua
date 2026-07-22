@@ -1,7 +1,7 @@
 ![Screenshot](https://github.com/uriid1/pimp-lua/blob/main/screenshots/pimp_logo.png)
 
 [Russian](README.md) | English</br>
-Support lua5.4 and luajit
+Support lua 5.1 - 5.4 and luajit
 
 ## Overview
 Module for pretty-printing tables and text, as well as for simple debugging using Lua's built-in debug methods. The main goal of the module is to replace print with a more advanced tool.
@@ -68,17 +68,7 @@ p('Wow! It\'s new prefix!')
 p:resetPrefix()
 ```
 ```
-INFO|-> file.lua:2: 'Wow! It's new preffix!': [length 22]
-```
-
-**logging**
-```lua
-p.log.trace('Trace message')
-p.log.debug('Debug message')
-p.log.info('Info message')
-p.log.warn('Warn message')
-p.log.error('Error message')
-p.log.fatal('Fatal message')
+INFO|-> file.lua:2: "Wow! It's new prefix!"
 ```
 
 Extensive configuration </br>
@@ -100,9 +90,27 @@ p:enableTableAddr()
 p:disableTableAddr()
 p:enableFullCallStack()
 p:disableFullCallStack()
-p.pp(t)
+p:enableEscapeNonAscii()
+p:disableEscapeNonAscii()
+p:decimalToHexadecimal()
+p.pp(t) -- Dump a table and return the dump as text
+p.ppnc(t) -- Same, but without colors
+p.msg(text) -- Print a text message with a timestamp
+p.getLocalEnv(level) -- Return local variables at the given stack level
 p:enableFindLocalName()
 p:disableFindLocalName()
+
+-- Enable/Disable resolving argument names from the call-site source line
+-- p(foo) --> foo = 42; p(foo + 1) --> foo + 1 = 43
+-- Requires the source file to be readable at runtime; disabled by default
+p:enableFindNameFromSource()
+p:disableFindNameFromSource()
+
+-- Output limits in nodejs style (0 - unlimited)
+-- Maximum table elements to display (default 100, like maxArrayLength)
+p:setMaxElements(100)
+-- Maximum string bytes to display (default 10000, like maxStringLength)
+p:setMaxStringLength(10000)
 p:enableCallStackLadder()
 p:disableCallStackLadder()
 ```

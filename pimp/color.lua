@@ -1,38 +1,37 @@
--- Модуль для отображения текста в заданном цвете
+--- Text colorization module.
 local config = require('pimp.config')
-local colorScheme = require('pimp.colorscheme.default')
+local colorscheme = require('pimp.colorscheme.default')
 
 local color = {}
 
--- Добавление цветов из цветовой схемы
---
-for name, col in pairs(colorScheme.color) do
+-- Import of colors and scheme from the color theme
+for name, col in pairs(colorscheme.color) do
   color[name] = col
 end
 
 color.scheme = {}
-for name, col in pairs(colorScheme.scheme) do
+for name, col in pairs(colorscheme.scheme) do
   color.scheme[name] = col
 end
 
-color.log = {}
-for name, col in pairs(colorScheme.log) do
-  color.log[name] = col
-end
---
-
+--- Enable or disable colored output.
+-- @tparam boolean value Color usage flag
 function color.colorise(value)
   config.color.use_color = value and true or false
 end
 
-function color:tocolor(color_type, value)
-  color_type = color_type or self.white
+--- Wrap a value into color codes.
+-- @tparam ?string colorType Color code from the scheme, white by default
+-- @tparam any value Value to colorize
+-- @treturn string Colorized string, or a plain one when color is disabled
+function color:tocolor(colorType, value)
+  colorType = colorType or self.white
 
   if config.color.use_color == false then
     return tostring(value)
   end
 
-  return color_type..tostring(value)..color.reset
+  return colorType .. tostring(value) .. color.reset
 end
 
 setmetatable(color, { __call = color.tocolor })

@@ -1,4 +1,5 @@
-local p = require('pimp')
+-- luacheck: ignore 311 (arg values are read through debug.getlocal in the stack output)
+local p = require('pimp.init')
   :enableType()
   :enableTableAddr()
   :enableVisibility()

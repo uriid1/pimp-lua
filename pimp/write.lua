@@ -1,15 +1,10 @@
----
--- Writes the given arguments to the standard output stream, followed by a newline
--- character, and flushes the output
---
--- @function write
--- @param ... - The data to be written to the output
---
--- @usage
--- write("Hello, world!")
---
+--- Standard output writer.
+
+--- Write arguments as a single line with a trailing newline and flush.
+-- Empty strings are rendered as ''.
+-- @tparam any ... Data to write
 local function write(...)
-  local data = ''
+  local args = {}
   local argsCount = select('#', ...)
 
   for i = 1, argsCount do
@@ -18,10 +13,10 @@ local function write(...)
       arg = '\'\''
     end
 
-    data = data..tostring(arg)..'\t'
+    args[i] = tostring(arg)
   end
 
-  io.write(data, '\n')
+  io.write(table.concat(args, '\t'), '\n')
   io.flush()
 end
 

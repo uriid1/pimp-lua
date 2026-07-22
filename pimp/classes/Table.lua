@@ -1,48 +1,60 @@
--- Объект прототип table типа
+--- Prototype object of the table type.
 local color = require('pimp.color')
 
 local Table = {}
 Table.__index = Table
 
+--- Wrapper constructor for a table value.
+-- @tparam ?string varname Variable name
+-- @tparam table value Value to wrap
+-- @treturn table obj
 function Table:new(varname, value)
   local obj = {}
   obj.type = 'table'
   obj.varname = varname
   obj.value = value
-  obj.show_table_addr = false
+  obj.showTableAddr = false
   obj.showType = true
-  obj.colorise = true
   obj.color = color.scheme.Table
 
   setmetatable(obj, self)
   return obj
 end
 
+--- Build the table prefix: variable name and optionally the address.
+-- The table content itself is printed by pretty_print.
+-- @treturn string data
 function Table:compile()
   local data = ''
 
   if self.varname then
-    if self.show_table_addr then
-      local adress = color(color.scheme.debugAddress, tostring(self.value))
+    if self.showTableAddr then
+      local address = color(color.scheme.debugAddress, tostring(self.value))
       data = data
         .. color(color.scheme.tablePrefix, tostring(self.varname))
-        .. ': <'..adress..'> = '
+        .. ': <' .. address .. '> = '
     else
-      data = data..color(color.scheme.tablePrefix, tostring(self.varname))..' = '
+      data = data .. color(color.scheme.tablePrefix, tostring(self.varname)) .. ' = '
     end
   end
 
   return data
 end
 
+--- Set the type label display.
+-- @tparam boolean val Enable or disable
+-- @treturn table self
 function Table:setShowType(val)
   self.showType = val and true or false
 
   return self
 end
 
+--- Set the table address display.
+-- @tparam boolean val Enable or disable
+-- @treturn table self
 function Table:setShowTableAddr(val)
-  self.show_table_addr = val and true or false
+  self.showTableAddr = val and true or false
 
   return self
 end

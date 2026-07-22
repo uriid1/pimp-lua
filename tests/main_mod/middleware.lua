@@ -1,10 +1,13 @@
+--- Demo middleware: pipe handlers over a text value.
 local function pipe(...)
-  local handlers = {...}
+  local handlers = { ... }
 
-  return function (text)
+  return function(text)
     for _, handler in ipairs(handlers) do
-      return handler(text)
+      text = handler(text)
     end
+
+    return text
   end
 end
 
